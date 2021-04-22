@@ -1,11 +1,13 @@
 package com.example.qrcode;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -14,6 +16,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.qrcode.gameManager.GameFactory;
+import com.example.qrcode.gameManager.GameService;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -31,12 +37,13 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
     Button btnAction;
     String intentData = "";
 
+    GameService gameService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_barcode);
-
+        gameService = GameFactory.getInstance();
        initViews();
     }
 
@@ -116,12 +123,21 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
 
                         @Override
                         public void run() {
-                                btnAction.setText("Choisir");
-                                intentData = barcodes.valueAt(0).displayValue;
-                                txtBarcodeValue.setText(intentData);
+                            btnAction.setText("Choisir");
+                            intentData = barcodes.valueAt(0).displayValue;
+                            String text ="";
+                            gameService.getQRCodeReference(intentData).addOnCompleteListener(new OnCompleteListener<String>() {
+                                @Override
+                                public void onComplete(@NonNull Task<String> task) {
+                                    if (!task.isSuccessful()){
+                                        Log.e("QRCodeReference error", task.getException().getMessage());
+                                    }else{
+                                        txtBarcodeValue.setText(task.getResult());
+                                    }
+                                }
+                            });
                         }
                     });
-
                 }
             }
         });
