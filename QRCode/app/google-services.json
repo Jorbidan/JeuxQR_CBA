@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "500383612809",
+    "project_id": "jeuxqr-cba",
+    "storage_bucket": "jeuxqr-cba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:500383612809:android:820b9af525d88759a1ab58",
+        "android_client_info": {
+          "package_name": "com.example.qrcode"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "500383612809-k48mqk3a0qvtp0kcbr1h1fisg4s3i7ce.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7z4DkXS8wF_Od7_Aw1yHk-rBN8IsxMMQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "500383612809-k48mqk3a0qvtp0kcbr1h1fisg4s3i7ce.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

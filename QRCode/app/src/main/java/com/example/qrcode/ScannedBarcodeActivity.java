@@ -119,7 +119,6 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
                                 btnAction.setText("Choisir");
                                 intentData = barcodes.valueAt(0).displayValue;
                                 txtBarcodeValue.setText(intentData);
-
                         }
                     });
 
