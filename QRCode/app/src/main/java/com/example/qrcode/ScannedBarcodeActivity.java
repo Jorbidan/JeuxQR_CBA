@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,8 +17,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.qrcode.gameManager.GameFactory;
-import com.example.qrcode.gameManager.GameService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.vision.CameraSource;
@@ -26,9 +25,14 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
+import java.nio.channels.InterruptedByTimeoutException;
 
 public class ScannedBarcodeActivity extends AppCompatActivity {
 
+    //https://www.javatpoint.com/android-startactivityforresult-example
+    //How to get info from this activity
+
+    private final int TAG_SCAN = 3;
     SurfaceView surfaceView;
     TextView txtBarcodeValue;
     private BarcodeDetector barcodeDetector;
@@ -37,13 +41,10 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
     Button btnAction;
     String intentData = "";
 
-    GameService gameService;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_barcode);
-        gameService = GameFactory.getInstance();
        initViews();
     }
 
@@ -57,9 +58,11 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (intentData.length() > 0) {
-                    //TODO Dépendamment des arguments de l'intention, faire une action
-                    //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(intentData)));
+                if(intentData.length() > 0){
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("QRCodeID", intentData);
+                    setResult(TAG_SCAN,returnIntent);
+                    finish();
                 }
             }
         });
@@ -110,7 +113,7 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-                Toast.makeText(getApplicationContext(), "To prevent memory leaks barcode scanner has been stopped", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Pour éviter une fuite de mémoire, le scanner QR a été arrêté", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -125,17 +128,7 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
                         public void run() {
                             btnAction.setText("Choisir");
                             intentData = barcodes.valueAt(0).displayValue;
-                            String text ="";
-                            gameService.getQRCodeReference(intentData).addOnCompleteListener(new OnCompleteListener<String>() {
-                                @Override
-                                public void onComplete(@NonNull Task<String> task) {
-                                    if (!task.isSuccessful()){
-                                        Log.e("QRCodeReference error", task.getException().getMessage());
-                                    }else{
-                                        txtBarcodeValue.setText(task.getResult());
-                                    }
-                                }
-                            });
+                            txtBarcodeValue.setText(intentData);
                         }
                     });
                 }
