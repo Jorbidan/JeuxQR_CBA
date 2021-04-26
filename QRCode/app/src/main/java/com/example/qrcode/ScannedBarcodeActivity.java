@@ -1,6 +1,5 @@
 package com.example.qrcode;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -8,7 +7,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,15 +15,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
-import java.nio.channels.InterruptedByTimeoutException;
 
 public class ScannedBarcodeActivity extends AppCompatActivity {
 
@@ -40,12 +35,30 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Button btnAction;
     String intentData = "";
+    Intent returnIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_barcode);
+        returnIntent = new Intent();
        initViews();
+    }
+
+
+    @Override
+    public void finish() {
+        Bundle extras = returnIntent.getExtras();
+        if(extras == null){
+            returnIntent.putExtra("QRCodeID", "");
+        }else if(extras.containsKey("QRCodeID") == false){
+            returnIntent.putExtra("QRCodeID", "");
+        }
+
+        setResult(TAG_SCAN, returnIntent);
+
+        super.finish();
     }
 
     private void initViews() {
@@ -57,20 +70,14 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
         btnAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(intentData.length() > 0){
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra("QRCodeID", intentData);
-                    setResult(TAG_SCAN,returnIntent);
-                    finish();
-                }
+                finish();
             }
         });
     }
 
     private void initialiseDetectorsAndSources() {
 
-        Toast.makeText(getApplicationContext(), "Barcode scanner started", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Scanner QR Commencé", Toast.LENGTH_SHORT).show();
 
         barcodeDetector = new BarcodeDetector.Builder(this)
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
@@ -126,9 +133,9 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
 
                         @Override
                         public void run() {
-                            btnAction.setText("Choisir");
                             intentData = barcodes.valueAt(0).displayValue;
-                            txtBarcodeValue.setText(intentData);
+                            returnIntent.putExtra("QRCodeID", intentData);
+                            finish();
                         }
                     });
                 }
