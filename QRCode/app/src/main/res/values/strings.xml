@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">QRCode</string>
     <string name="scan_barcode">Scan Barcode</string>
+    <string name="email">email</string>
+    <string name="mot_de_passe">mot de passe</string>
+    <string name="administrateur">Administrateur</string>
+    <string name="connexion">connexion</string>
 </resources>

@@ -13,7 +13,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private final int TAG_SCAN = 3;
     Button btnScanBarcode;
-
+    Button btnAdmin;
+    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -30,13 +31,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
+        setListeners();
+    }
+
+    private void setListeners() {
     }
 
     private void initViews() {
 
         btnScanBarcode = findViewById(R.id.btnScanBarcode);
-
         btnScanBarcode.setOnClickListener(this);
+        btnAdmin = findViewById(R.id.buttonAdmin);
+        btnAdmin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+            }
+        });
     }
 
     @Override
