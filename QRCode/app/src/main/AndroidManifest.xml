@@ -12,7 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QRCode">
         <activity android:name=".LobbyActivity"></activity>
-        <activity android:name=".ChooseImageActivity" />
         <activity android:name=".AdminLoginActivity" />
         <activity android:name=".AdminActivity" />
         <activity android:name=".ScannedBarcodeActivity" />
