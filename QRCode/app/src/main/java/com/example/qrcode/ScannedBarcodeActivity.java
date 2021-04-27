@@ -120,7 +120,7 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-                Toast.makeText(getApplicationContext(), "Pour éviter une fuite de mémoire, le scanner QR a été arrêté", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(), "Pour éviter une fuite de mémoire, le scanner QR a été arrêté", Toast.LENGTH_SHORT).show();
             }
 
             @Override

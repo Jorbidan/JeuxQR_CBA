@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(requestCode == TAG_SCAN)
         {
+            Toast.makeText(this, data.getStringExtra("QRCodeID"), Toast.LENGTH_SHORT ).show();
+
            return;
         }
     }
@@ -67,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_main_scanBarcode:
              Intent intentScanBarCode =  new Intent(MainActivity.this, ScannedBarcodeActivity.class);
              startActivityForResult(intentScanBarCode, TAG_SCAN);
-             finish();
                 break;
             case R.id.btn_main_adminLogin:
                 Intent intentLoginAdmin = new Intent(MainActivity.this,AdminLoginActivity.class);
