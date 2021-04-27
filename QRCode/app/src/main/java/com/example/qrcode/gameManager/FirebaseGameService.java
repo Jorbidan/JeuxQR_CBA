@@ -1,5 +1,7 @@
 package com.example.qrcode.gameManager;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.Continuation;
@@ -37,15 +39,15 @@ public class FirebaseGameService implements GameService {
     }
 
     @Override
-    public Task<Void> createGame(OnGameCreate onGameCreate) {
+    public Task<String> createGame(OnGameCreate onGameCreate) {
         Map<String, Object> game = new HashMap<>();
         game.put("isStarted", false);
         String gameCode = generateGameCode();
 
         CollectionReference Games = gameDatabase.collection("Games");
-        Continuation<Void,Void> GameCreationContinuation = new Continuation<Void, Void>() {
+        Continuation<DocumentSnapshot,String> GameCreationContinuation = new Continuation<DocumentSnapshot, String>() {
             @Override
-            public Void then(@NonNull Task<Void> task) throws Exception {
+            public String then(@NonNull Task<DocumentSnapshot> task) throws Exception {
                 if (!task.isSuccessful()){
                     FirebaseFirestoreException.Code errorCode = ((FirebaseFirestoreException) task.getException()).getCode();
                     switch (errorCode){
@@ -59,10 +61,73 @@ public class FirebaseGameService implements GameService {
                             throw new Exception("Une erreur est survenue, veuillez contacter un administrateur.");
                     }
                 }
-                return null;
+                return gameCode;
             }
         };
-        return Games.document(gameCode).set(game).continueWith(GameCreationContinuation);
+        Games.document(gameCode).set(game);
+        return Games.document(gameCode).get().continueWith(GameCreationContinuation);
+    }
+
+    @Override
+    public Task<Boolean> checkGameExist(String gameCode) {
+        Continuation<DocumentSnapshot, Boolean> resultContinuation = new Continuation<DocumentSnapshot, Boolean>() {
+            @Override
+            public Boolean then(@NonNull Task<DocumentSnapshot> task) throws Exception {
+                boolean exists = false;
+                if (task.isSuccessful()){
+                    exists = task.getResult().exists();
+                }
+                return exists;
+            }
+        };
+        return gameDatabase.collection("Games").document(gameCode).get().continueWith(resultContinuation);
+    }
+
+    @Override
+    public Task<Void> joinGame(String gameCode, String playerName) {
+       Map<String,Object> playerInGame = new HashMap<>();
+       playerInGame.put("tempsFinal",0);
+
+       CollectionReference Players = gameDatabase.collection("Games").document(gameCode).collection("Players");
+       Continuation<Void,Void> PlayerJoinGameContinuation = new Continuation<Void, Void>() {
+           @Override
+           public Void then(@NonNull Task<Void> task) throws Exception {
+               if(!task.isSuccessful()){
+                   FirebaseFirestoreException.Code errorCode =((FirebaseFirestoreException) task.getException()).getCode();
+                   String tagJoinGame = "JOINGAME continuation ";
+                   switch (errorCode){
+                       case CANCELLED:
+                           throw new Exception(tagJoinGame +"L'opération a été arrêtée ");
+                       case PERMISSION_DENIED:
+                           throw new Exception(tagJoinGame +"Vous ne pouvez pas faire cette opération");
+                       case UNAVAILABLE:
+                           throw new Exception(tagJoinGame +"Le service est indisponible");
+                       default:
+                           throw new Exception(tagJoinGame +"Une erreur exeptionnel est survenue");
+                   }
+               }
+               return null;
+           }
+       };
+        Map<String,Object> currentGame = new HashMap<>();
+        currentGame.put("Game",gameCode);
+        gameDatabase.collection("Players").document(playerName).set(currentGame);
+       return Players.document(playerName).set(playerInGame);
+    }
+
+    @Override
+    public Task<String> getCurrentGameCodeOfPlayer(String playerName) {
+        Continuation<DocumentSnapshot, String> resultContinuation = new Continuation<DocumentSnapshot, String>() {
+            @Override
+            public String then(@NonNull Task<DocumentSnapshot> task) throws Exception {
+                String gameCode = "";
+                if (task.isSuccessful()){
+                    gameCode = task.getResult().get("actualGameCode").toString();
+                }
+                return gameCode;
+            }
+        };
+        return gameDatabase.collection("Players").document(playerName).get().continueWith(resultContinuation);
     }
 
     private String generateGameCode() {

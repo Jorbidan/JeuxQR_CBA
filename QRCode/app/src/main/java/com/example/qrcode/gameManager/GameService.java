@@ -4,16 +4,17 @@ import com.google.android.gms.tasks.Task;
 
 public interface GameService {
     Task<String> getQRCodeReference(String qrCode);
-    Task<Void> createGame(OnGameCreate onGameCreate);
-    /*
+    Task<String> createGame(OnGameCreate onGameCreate);
+    Task<Boolean> checkGameExist(String gameCode);
     Task<Void> joinGame(String gameCode, String playerName);
+    Task<String> getCurrentGameCodeOfPlayer(String player_email);
+    /*
     Task<Void> startGame(String gameCode);
     Task<Void> endGame(String gameCode);
-    Task<Boolean> verifyGameExist(String gameCode);
     */
 
     public interface OnGameCreate{
-        void createGame();
+        void OnCreateGame();
     }
 
 }

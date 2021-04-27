@@ -3,4 +3,10 @@
     <string name="scan_barcode">Scan Barcode</string>
     <string name="continuer">Continuer</string>
     <string name="aucun_code_qr_detect">Aucun code QR detecté</string>
+    <string name="email">email</string>
+    <string name="mot_de_passe">mot de passe</string>
+    <string name="connexion">connexion</string>
+    <string name="administration">Administration</string>
+    <string name="l_administrateur_pourra_gerer_les_parties_ici">L\'administrateur pourra gerer les parties ici.</string>
+    <string name="retour_menu_principale">Retour menu principale</string>
 </resources>

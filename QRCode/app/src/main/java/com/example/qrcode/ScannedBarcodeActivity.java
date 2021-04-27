@@ -85,7 +85,7 @@ public class ScannedBarcodeActivity extends AppCompatActivity {
 
         cameraSource = new CameraSource.Builder(this, barcodeDetector)
                 .setRequestedPreviewSize(1920, 1080)
-                .setAutoFocusEnabled(true) //you should add this feature
+                .setAutoFocusEnabled(true)
                 .build();
 
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {

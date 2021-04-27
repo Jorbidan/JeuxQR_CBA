@@ -7,6 +7,7 @@ import android.view.textclassifier.TextClassifierEvent;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -80,6 +81,20 @@ public class FirebaseAuthenticationService implements AuthenticationService {
     @Override
     public Boolean isLogIn() {
         return firebaseAuth.getCurrentUser() != null;
+    }
+
+    @Override
+    public Task<Void> anonymousLogin() {
+        Continuation<AuthResult, Void> authResultVoidContinuation = new Continuation<AuthResult, Void>() {
+            @Override
+            public Void then(@NonNull Task<AuthResult> task) throws Exception {
+                if(!task.isSuccessful()){
+                    Log.e("AnonymousLogin",task.getException().getMessage());
+                }
+                return null;
+            }
+        };
+        return  firebaseAuth.signInAnonymously().continueWith(authResultVoidContinuation);
     }
 
     @Override
