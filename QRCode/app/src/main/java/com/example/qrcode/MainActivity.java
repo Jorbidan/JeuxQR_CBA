@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     InputStream inputStream = context.getContentResolver().openInputStream(data.getData());
                     bmp = BitmapFactory.decodeStream(inputStream);
                     Log.d("PICK_IMAGE", "BitMap got");
-                    imageViewTest.setImageBitmap(bmp);
                 } catch (FileNotFoundException e) {
                     Log.e("PICK_IMAGE", "error while trying to get data");
                     e.printStackTrace();
