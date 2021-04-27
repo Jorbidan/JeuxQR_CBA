@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Bitmap bmp;
     private final int TAG_SCAN = 3;
     private final int PICK_IMAGE = 4;
-    ImageView imageViewTest;
     Button btnScanBarcode, btnGallery;
     Button buttonAdmin;
     TextView textGameCode;
@@ -90,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btnGallery = findViewById(R.id.btn_main_openGallery);
         btnGallery.setOnClickListener(this);
-        imageViewTest = findViewById(R.id.imageViewTest);
     }
 
     @Override
