@@ -24,9 +24,6 @@ import java.io.IOException;
 
 public class ScannedBarcodeActivity extends AppCompatActivity {
 
-    //https://www.javatpoint.com/android-startactivityforresult-example
-    //How to get info from this activity
-
     private final int TAG_SCAN = 3;
     SurfaceView surfaceView;
     TextView txtBarcodeValue;

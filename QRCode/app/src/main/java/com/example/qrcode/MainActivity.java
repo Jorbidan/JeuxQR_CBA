@@ -4,11 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,10 +26,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.auth.User;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    Context context;
+    Bitmap bmp;
     private final int TAG_SCAN = 3;
-    Button btnScanBarcode;
+    private final int PICK_IMAGE = 4;
+    Button btnScanBarcode, btnGallery;
     Button buttonAdmin;
     TextView textGameCode;
     TextView textPlayerName;
@@ -36,18 +45,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == TAG_SCAN)
-        {
-            Toast.makeText(this, data.getStringExtra("QRCodeID"), Toast.LENGTH_SHORT ).show();
+        switch(requestCode) {
+            case TAG_SCAN:
+                Toast.makeText(this, data.getStringExtra("QRCodeID"), Toast.LENGTH_SHORT).show();
+                break;
+            case PICK_IMAGE:
+                if(data == null){
+                    Log.e("PICK_IMAGE", "error while getting data");
+                }
 
-           return;
+                try {
+                    InputStream inputStream = context.getContentResolver().openInputStream(data.getData());
+                    bmp = BitmapFactory.decodeStream(inputStream);
+                    Log.d("PICK_IMAGE", "BitMap got");
+                } catch (FileNotFoundException e) {
+                    Log.e("PICK_IMAGE", "error while trying to get data");
+                    e.printStackTrace();
+                }
+                break;
+
         }
+
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = this;
         initViews();
         //authenticationService.logoff();
     }
@@ -64,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnPlay.setOnClickListener(this);
         textGameCode = findViewById(R.id.text_main_GameCode);
         textPlayerName = findViewById(R.id.text_main_playerName);
+
+        btnGallery = findViewById(R.id.btn_main_openGallery);
+        btnGallery.setOnClickListener(this);
     }
 
     @Override
@@ -73,6 +101,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_main_scanBarcode:
              Intent intentScanBarCode =  new Intent(MainActivity.this, ScannedBarcodeActivity.class);
              startActivityForResult(intentScanBarCode, TAG_SCAN);
+                break;
+
+            case R.id.btn_main_openGallery:
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
                 break;
             case R.id.btn_main_adminLogin:
                 Intent intentLoginAdmin = new Intent(MainActivity.this,AdminLoginActivity.class);
@@ -91,10 +126,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()){
+<<<<<<< HEAD
                                             Log.e("joinGame","player "+playerName+" has joined game "+gameCode);
                                             if(authenticationService.isLogIn()){
                                                 authenticationService.logoff();
                                             }
+=======
+                                            Log.e("joinGame",playerName+" a rejoin la partie "+gameCode);
+>>>>>>> f5777fc99595958a96dad4e54096fb7d981e8c85
                                         }else{
                                             Log.e("joinGame",task.getException().getMessage());
                                         }
