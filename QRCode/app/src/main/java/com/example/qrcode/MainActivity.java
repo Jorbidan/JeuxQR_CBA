@@ -126,14 +126,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()){
-<<<<<<< HEAD
                                             Log.e("joinGame","player "+playerName+" has joined game "+gameCode);
                                             if(authenticationService.isLogIn()){
                                                 authenticationService.logoff();
                                             }
-=======
                                             Log.e("joinGame",playerName+" a rejoin la partie "+gameCode);
->>>>>>> f5777fc99595958a96dad4e54096fb7d981e8c85
                                         }else{
                                             Log.e("joinGame",task.getException().getMessage());
                                         }
