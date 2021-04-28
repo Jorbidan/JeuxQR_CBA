@@ -12,6 +12,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.auth.User;
 
 import java.lang.reflect.Executable;
 
@@ -69,7 +72,7 @@ public class FirebaseAuthenticationService implements AuthenticationService {
                         case "ERROR_INVALID_EMAIL":
                             throw new Exception("Cet email n'est pas valide");
                         default:
-                            throw new Exception("Une erreur est survenue");
+                            throw new Exception(task.getException().getMessage());
                     }
                 }
                 return null;
@@ -83,6 +86,7 @@ public class FirebaseAuthenticationService implements AuthenticationService {
         return firebaseAuth.getCurrentUser() != null;
     }
 
+    /*
     @Override
     public Task<Void> anonymousLogin() {
         Continuation<AuthResult, Void> authResultVoidContinuation = new Continuation<AuthResult, Void>() {
@@ -98,10 +102,25 @@ public class FirebaseAuthenticationService implements AuthenticationService {
     }
 
     @Override
-    public String getCurrentUserEmail() throws Exception {
+    public Task<Void> setUserDisplayName(UserProfileChangeRequest profile) {
+        Continuation<Void, Void> setUserDisplayNameContinuation = new Continuation<Void, Void>() {
+            @Override
+            public Void then(@NonNull Task<Void> task) throws Exception {
+                if(!task.isSuccessful()){
+                    Log.e("setUserDisplayName",task.getException().getMessage());
+                }
+                return null;
+            }
+        };
+        return firebaseAuth.getCurrentUser().updateProfile(profile).continueWith(setUserDisplayNameContinuation);
+    }*/
+
+    @Override
+    public String getCurrentUserDisplayName() throws Exception {
         if (!isLogIn()){
             throw new Exception("Usager non connecté");
         }
-        return firebaseAuth.getCurrentUser().getEmail();
+        String email = firebaseAuth.getCurrentUser().getEmail();
+        return email.substring(0,email.indexOf('@'));
     }
 }

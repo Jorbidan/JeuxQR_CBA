@@ -86,6 +86,7 @@ public class FirebaseGameService implements GameService {
     @Override
     public Task<Void> joinGame(String gameCode, String playerName) {
        Map<String,Object> playerInGame = new HashMap<>();
+       playerInGame.put("currentQR",1);
        playerInGame.put("tempsFinal",0);
 
        CollectionReference Players = gameDatabase.collection("Games").document(gameCode).collection("Players");
@@ -122,8 +123,9 @@ public class FirebaseGameService implements GameService {
             public String then(@NonNull Task<DocumentSnapshot> task) throws Exception {
                 String gameCode = "";
                 if (task.isSuccessful()){
-                    gameCode = task.getResult().get("actualGameCode").toString();
+                    gameCode = task.getResult().get("Game").toString();
                 }
+                Log.e("getGameCOde",gameCode);
                 return gameCode;
             }
         };

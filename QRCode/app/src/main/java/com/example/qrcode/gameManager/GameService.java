@@ -7,7 +7,7 @@ public interface GameService {
     Task<String> createGame(OnGameCreate onGameCreate);
     Task<Boolean> checkGameExist(String gameCode);
     Task<Void> joinGame(String gameCode, String playerName);
-    Task<String> getCurrentGameCodeOfPlayer(String player_email);
+    Task<String> getCurrentGameCodeOfPlayer(String playerName);
     /*
     Task<Void> startGame(String gameCode);
     Task<Void> endGame(String gameCode);

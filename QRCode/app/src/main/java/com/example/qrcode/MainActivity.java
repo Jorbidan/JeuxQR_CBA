@@ -18,6 +18,9 @@ import com.example.qrcode.gameManager.GameFactory;
 import com.example.qrcode.gameManager.GameService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.auth.User;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -46,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
+        //authenticationService.logoff();
     }
 
     private void initViews() {
@@ -83,18 +87,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onComplete(@NonNull Task<Boolean> task) {
                             if (task.getResult()){
-                                gameService.joinGame(gameCode,playerName).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                gameService.joinGame(gameCode,playerName.toLowerCase()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()){
                                             Log.e("joinGame","player "+playerName+" has joined game "+gameCode);
+                                            if(authenticationService.isLogIn()){
+                                                authenticationService.logoff();
+                                            }
                                         }else{
                                             Log.e("joinGame",task.getException().getMessage());
                                         }
                                     }
                                 });
-                                authenticationService.anonymousLogin();
-                                goToLobbyActivity();
+                                authenticationService.signUp(playerName.concat("@email.com"),gameCode).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (!task.isSuccessful()){
+                                            Log.e("AnonymousSignUp",task.getException().getMessage());
+                                        }
+                                        else{
+                                            authenticationService.login(playerName.concat("@email.com"),gameCode).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (!task.isSuccessful()){
+                                                        Log.e("AnonymousLogin",task.getException().getMessage());
+                                                    }else {
+                                                        goToLobbyActivity();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+
                             }
                             else{
                                 Toast.makeText(MainActivity.this,"Le code entrée n'est pas valide.",Toast.LENGTH_SHORT).show();

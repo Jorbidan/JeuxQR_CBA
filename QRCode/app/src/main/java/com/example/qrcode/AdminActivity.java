@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.qrcode.authentication.AuthenticationFactory;
+import com.example.qrcode.authentication.AuthenticationService;
 import com.example.qrcode.gameManager.GameFactory;
 import com.example.qrcode.gameManager.GameService;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,11 +23,13 @@ public class AdminActivity extends AppCompatActivity {
     Button btnCreateGame;
     TextView textPartieEnCours;
     GameService gameService;
+    AuthenticationService authenticationService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
         gameService = GameFactory.getInstance();
+        authenticationService = AuthenticationFactory.getInstance();
         btnMenuPrincipale = findViewById(R.id.btn_admin_menuPrincipale);
         btnCreateGame = findViewById(R.id.btn_admin_createGame);
         textPartieEnCours = findViewById(R.id.text_admin_partieEnCours);
@@ -36,6 +40,7 @@ public class AdminActivity extends AppCompatActivity {
         btnMenuPrincipale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                authenticationService.logoff();
                 goToMainActivity();
             }
         });
