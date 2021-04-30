@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final int TAG_SCAN = 3;
     private final int PICK_IMAGE = 4;
     Button btnScanBarcode, btnGallery;
-    Button buttonAdmin;
+    Button buttonAdmin, btnAddImage;
     TextView textGameCode;
     TextView textPlayerName;
     Button btnPlay;
@@ -80,7 +80,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initViews() {
         gameService = GameFactory.getInstance();
         authenticationService = AuthenticationFactory.getInstance();
-
+        btnAddImage = findViewById(R.id.btn_main_chooseImage);
+        btnAddImage.setOnClickListener(this);
         btnScanBarcode = findViewById(R.id.btn_main_scanBarcode);
         btnScanBarcode.setOnClickListener(this);
         buttonAdmin = findViewById(R.id.btn_main_adminLogin);
@@ -113,6 +114,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intentLoginAdmin = new Intent(MainActivity.this,AdminLoginActivity.class);
                 startActivity(intentLoginAdmin);
                 finish();
+                break;
+
+            case R.id.btn_main_chooseImage:
+                Intent intentAddImage = new Intent(MainActivity.this, ImageChooseActivity.class);
+                startActivity(intentAddImage);
                 break;
             case R.id.btn_main_play:
                 String playerName = textPlayerName.getText().toString();

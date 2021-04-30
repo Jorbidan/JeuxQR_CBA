@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QRCode">
-        <activity android:name=".LobbyActivity"></activity>
+        <activity android:name=".ImageChooseActivity"></activity>
+        <activity android:name=".LobbyActivity" />
         <activity android:name=".AdminLoginActivity" />
         <activity android:name=".AdminActivity" />
         <activity android:name=".ScannedBarcodeActivity" />
