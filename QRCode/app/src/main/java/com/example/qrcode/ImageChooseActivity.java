@@ -1,12 +1,16 @@
 package com.example.qrcode;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,14 +21,24 @@ import android.widget.Toast;
 
 import com.example.qrcode.ImageManager.ImageFactory;
 import com.example.qrcode.ImageManager.ImageService;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageChooseActivity extends AppCompatActivity implements View.OnClickListener{
     private final int PICK_IMAGE = 1;
     Button btnAddImage;
     ImageService imageService;
+    RecyclerView recyclerView;
+    RecyclerView.Adapter recyclerViewAdapter;
+    RecyclerView.LayoutManager layoutManager;
+    List<StorageReference> storageReferenceList = new ArrayList<>();
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -40,14 +54,35 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_choose);
+        imageService = ImageFactory.getInstance();
         initViews();
 
     }
 
     private void initViews() {
-        imageService = ImageFactory.getInstance();
         btnAddImage = findViewById(R.id.btn_imageChoose_addImage);
         btnAddImage.setOnClickListener(this);
+
+        //Initiation du recyclerView pour avoir une liste d'images
+        recyclerView = findViewById(R.id.recyclerView_imageChoose);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerViewAdapter = new ImageRecyclerAdapter(storageReferenceList);
+        recyclerView.setAdapter(recyclerViewAdapter);
+
+        imageService.listAllImages().addOnCompleteListener(new OnCompleteListener<List<StorageReference>>() {
+            @Override
+            public void onComplete(@NonNull Task<List<StorageReference>> task) {
+                if(task.isSuccessful()) {
+                    storageReferenceList.addAll(task.getResult());
+                    recyclerViewAdapter.notifyDataSetChanged();
+                }else{
+                    Log.d("ImageChooseActivity", "Erreur lors de l'appel des noms d'images");
+                }
+            }
+        });
+
     }
 
     @Override
@@ -98,7 +133,7 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
                 if(imageName == ""){
                     Toast.makeText(getApplicationContext(), "L'image doit avoir un nom", Toast.LENGTH_SHORT).show();
                 }else{
-                    imageService.uploadImage(bmp, imageName);
+                    imageService.uploadImage(bmp, imageName+".jpg");
                     dialogSetNameAndConfirm.dismiss();
                 }
             }

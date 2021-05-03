@@ -29,7 +29,7 @@ public class FireStoreImageService implements ImageService {
     @Override
     public Task<Void> uploadImage(Bitmap imageBitmap, String imageName) {
         StorageReference storageRef = firebaseStorage.getReference();
-        StorageReference imageRef = storageRef.child("images/"+imageName+".jpg");
+        StorageReference imageRef = storageRef.child("images/"+imageName);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -49,7 +49,8 @@ public class FireStoreImageService implements ImageService {
     @Override
     public Task<Bitmap> downloadImage(String imageName) {
         StorageReference storageRef = firebaseStorage.getReference();
-        StorageReference imageReference = storageRef.child("images/"+imageName+".jpg");
+        StorageReference imageReference = storageRef.child("images/"+imageName);
+        long TWO_MEGABYTE = 1024 * 1024 * 2;
        Continuation<byte[], Bitmap> downloadImageContinuation = new Continuation<byte[], Bitmap>() {
            @Override
            public Bitmap then(@NonNull Task<byte[]> task) throws Exception {
@@ -61,7 +62,7 @@ public class FireStoreImageService implements ImageService {
            }
        };
 
-        return imageReference.getBytes().continueWith(downloadImageContinuation);
+        return imageReference.getBytes(TWO_MEGABYTE).continueWith(downloadImageContinuation);
     }
 
     @Override
