@@ -59,7 +59,7 @@ public class AdminActivity extends AppCompatActivity {
                             Log.e("gameCREATED","error occured");
                         }
                         else{
-                            textPartieEnCours.append(task.getResult());
+                            textPartieEnCours.setText(task.getResult());
                         }
                     }
                 });

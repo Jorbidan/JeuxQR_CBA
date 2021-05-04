@@ -1,8 +1,11 @@
 package com.example.qrcode.gameManager;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import android.content.SharedPreferences;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
@@ -14,9 +17,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public class FirebaseGameService implements GameService {
     FirebaseFirestore gameDatabase;
+    final String TAG = "GameService";
 
     public FirebaseGameService(){
         this.gameDatabase = FirebaseFirestore.getInstance();
@@ -125,12 +130,32 @@ public class FirebaseGameService implements GameService {
                 if (task.isSuccessful()){
                     gameCode = task.getResult().get("Game").toString();
                 }
-                Log.e("getGameCOde",gameCode);
+                Log.e(TAG,"getGameCode :" + gameCode);
                 return gameCode;
             }
         };
         return gameDatabase.collection("Players").document(playerName).get().continueWith(resultContinuation);
     }
+
+    @Override
+    public Task<Void> endGame(String gameCode) {
+        Continuation<Void,Void> endGameContinuation = new Continuation<Void, Void>() {
+            @Override
+            public Void then(@NonNull Task<Void> task) throws Exception {
+                if(!task.isSuccessful()){
+                    Log.e(TAG,task.getException().getMessage());
+                }
+                return null;
+            }
+        };
+        return gameDatabase.collection("Games").document(gameCode).delete().continueWith(endGameContinuation);
+    }
+
+    @Override
+    public Void subscribeToPlayerList(String gameCode, OnPlayerInGameChange onPlayerInGameChange) {
+        return null;
+    }
+
 
     private String generateGameCode() {
         Random rand = new Random();
