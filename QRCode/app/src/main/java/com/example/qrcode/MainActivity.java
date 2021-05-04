@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -26,8 +27,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.auth.User;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     Context context;
@@ -132,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()){
-                                            Log.e("joinGame","player "+playerName+" has joined game "+gameCode);
                                             if(authenticationService.isLogIn()){
                                                 authenticationService.logoff();
                                             }
@@ -142,27 +144,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         }
                                     }
                                 });
-                                authenticationService.signUp(playerName.concat("@email.com"),gameCode).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (!task.isSuccessful()){
-                                            Log.e("AnonymousSignUp",task.getException().getMessage());
-                                        }
-                                        else{
-                                            authenticationService.login(playerName.concat("@email.com"),gameCode).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (!task.isSuccessful()){
-                                                        Log.e("AnonymousLogin",task.getException().getMessage());
-                                                    }else {
-                                                        goToLobbyActivity();
-                                                    }
-                                                }
-                                            });
-                                        }
-                                    }
-                                });
-
+                                try {
+                                    SharedPreferences sharedPreferences = getSharedPreferences("playerName",MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("playerName", playerName);
+                                    editor.commit();
+                                }
+                                catch(Exception e){
+                                    Log.e("CachedFile","Could noty create cached file due to : "+e.getMessage());
+                                }
+                                goToLobbyActivity();
                             }
                             else{
                                 Toast.makeText(MainActivity.this,"Le code entrée n'est pas valide.",Toast.LENGTH_SHORT).show();

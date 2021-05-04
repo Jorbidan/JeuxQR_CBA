@@ -3,6 +3,7 @@ package com.example.qrcode;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -13,6 +14,8 @@ import com.example.qrcode.gameManager.GameFactory;
 import com.example.qrcode.gameManager.GameService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import java.io.File;
 
 public class LobbyActivity extends AppCompatActivity {
     TextView textCurrentGame;
@@ -40,7 +43,9 @@ public class LobbyActivity extends AppCompatActivity {
 
     private void setData() {
         try {
-            displayName = authenticationService.getCurrentUserDisplayName();
+            SharedPreferences sharedPreferences;
+            sharedPreferences = getSharedPreferences("playerName",MODE_PRIVATE);
+            displayName = sharedPreferences.getString("playerName","Aucun nom trouvé");
             textDisplayName.setText(displayName);
         }catch (Exception e){
             Log.e("setDataLobby","displayName :"+e.getMessage());
