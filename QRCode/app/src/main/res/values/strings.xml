@@ -9,4 +9,7 @@
     <string name="l_administrateur_pourra_gerer_les_parties_ici">L\'administrateur pourra gerer les parties ici.</string>
     <string name="retour_menu_principale">Retour menu principale</string>
     <string name="ajouter_image">Ajouter Image</string>
+    <string name="les_joueurs_participants">Les joueurs participants</string>
+    <string name="la_partie_n_est_pas_encore_d_but">La partie n\'est pas encore débuté.</string>
+    <string name="scan">SCAN!</string>
 </resources>

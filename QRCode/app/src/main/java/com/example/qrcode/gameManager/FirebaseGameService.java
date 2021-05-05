@@ -10,9 +10,12 @@ import android.content.SharedPreferences;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -153,6 +156,29 @@ public class FirebaseGameService implements GameService {
 
     @Override
     public Void subscribeToPlayerList(String gameCode, OnPlayerInGameChange onPlayerInGameChange) {
+        gameDatabase.collection("Games").document(gameCode).collection("Players").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshots,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("TAG", "listen:error", e);
+                    return;
+                }
+
+                for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                    switch (dc.getType()) {
+                        case ADDED:
+                            onPlayerInGameChange.joinGame(dc.getDocument().getId());
+                            Log.e("PlayerList changed", "Added : " + dc.getDocument().getId());
+                            break;
+                        case REMOVED:
+                            onPlayerInGameChange.leaveGame(dc.getDocument().getId());
+                            Log.e("PlayerList changed", "Removed : " + dc.getDocument().getId());
+                            break;
+                    }
+                }
+            }
+        });
         return null;
     }
 

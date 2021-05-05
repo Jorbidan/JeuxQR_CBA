@@ -2,6 +2,8 @@ package com.example.qrcode;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,6 +18,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LobbyActivity extends AppCompatActivity {
     TextView textCurrentGame;
@@ -24,6 +28,10 @@ public class LobbyActivity extends AppCompatActivity {
     String gameCode;
     GameService gameService;
     AuthenticationService authenticationService;
+    RecyclerView recyclerView;
+    RecyclerView.Adapter recyclerViewAdapter;
+    RecyclerView.LayoutManager layoutManager;
+    List<String> playersInLobby = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +42,12 @@ public class LobbyActivity extends AppCompatActivity {
         gameCode = "";
         textCurrentGame = findViewById(R.id.text_lobby_currentGame);
         textDisplayName = findViewById(R.id.text_lobby_displayName);
+        recyclerView = findViewById(R.id.recyclerView_lobby_playerRecycler);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerViewAdapter = new PlayerRecyclerAdapter(playersInLobby);
+        recyclerView.setAdapter(recyclerViewAdapter);
         setData();
         setListeners();
     }
@@ -59,8 +73,28 @@ public class LobbyActivity extends AppCompatActivity {
                     Log.e("gameCOdeFOund",task.getResult());
                     gameCode = task.getResult();
                     textCurrentGame.setText("Code de partie : " + gameCode);
+                    showPlayersInLobby();
                 }
             }
         });
+    }
+    private void showPlayersInLobby(){
+        gameService.subscribeToPlayerList(gameCode, new GameService.OnPlayerInGameChange() {
+            @Override
+            public void joinGame(String player) {
+                playersInLobby.add(player);
+                updateRecycler();
+            }
+
+            @Override
+            public void leaveGame(String player) {
+                playersInLobby.remove(player);
+                updateRecycler();
+            }
+        });
+    }
+
+    private void updateRecycler() {
+        recyclerViewAdapter.notifyDataSetChanged();
     }
 }
