@@ -68,7 +68,7 @@ public class QRCodeRecyclerAdapter extends RecyclerView.Adapter<QRCodeRecyclerAd
             btnDeleteQRCode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    deleteQRCode();
+                    deleteQRCode(getLayoutPosition());
                 }
             });
         }
@@ -103,10 +103,10 @@ public class QRCodeRecyclerAdapter extends RecyclerView.Adapter<QRCodeRecyclerAd
             // Si il y en a pas, c'est un ajout et on permet le changement du textViewQRCode (ID QRCode)
             // Si on fait un ajout et l'ID est le même que l'un dans la BD (Vérification de +), on empêche l'ajout avec un bloque et un affichage sur la view (text rouge etc.)
         }
-        private void deleteQRCode(){
-            //TODO: 1. Message de confirmation
-            // 2. On supprime de la BD
-            // 3. On supprime le View dans l'adapter
+        private void deleteQRCode(int position){
+            QRCodesInfo.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, QRCodesInfo.size());
         }
     }
 }

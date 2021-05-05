@@ -1,7 +1,7 @@
 package com.example.qrcode;
 
 public class QRCodeInfo {
-    private static String QRCode, imageRef, title, description, question, reponse;
+    private static String QRCode, imageRef, title, description, question, reponse, indice;
 
     public static String getQRCode() {
         return QRCode;
@@ -49,5 +49,13 @@ public class QRCodeInfo {
 
     public static void setReponse(String reponse) {
         QRCodeInfo.reponse = reponse;
+    }
+
+    public static String getIndice() {
+        return indice;
+    }
+
+    public static void setIndice(String indice) {
+        QRCodeInfo.indice = indice;
     }
 }

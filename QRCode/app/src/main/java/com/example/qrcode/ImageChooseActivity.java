@@ -118,7 +118,7 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
 
     private void addBitmapToDatabase(Bitmap bmp) {
 
-        Dialog dialogSetNameAndConfirm = new Dialog(this);
+        Dialog dialogSetNameAndConfirm = new Dialog(this, R.style.ThemeOverlay_AppCompat);
         dialogSetNameAndConfirm.setContentView(R.layout.dialog_add_image);
         dialogSetNameAndConfirm.setTitle("Ajout d'image");
 
