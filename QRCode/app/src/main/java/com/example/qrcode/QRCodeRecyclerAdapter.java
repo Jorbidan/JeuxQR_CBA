@@ -1,17 +1,20 @@
 package com.example.qrcode;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.qrcode.ImageManager.ImageFactory;
 import com.example.qrcode.ImageManager.ImageService;
+import com.example.qrcode.gameManager.GameService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -20,7 +23,10 @@ import java.util.List;
 public class QRCodeRecyclerAdapter extends RecyclerView.Adapter<QRCodeRecyclerAdapter.MyViewHolder>{
     private List<QRCodeInfo> QRCodesInfo;
     ImageService imageService;
+    GameService gameService;
     String TAG = "QRCodeRecyclerAdapter";
+
+    public QRCodeRecyclerAdapter(List<QRCodeInfo> QRCodesInfo) {this.QRCodesInfo = QRCodesInfo;}
 
     @NonNull
     @Override
@@ -46,17 +52,28 @@ public class QRCodeRecyclerAdapter extends RecyclerView.Adapter<QRCodeRecyclerAd
     public class MyViewHolder extends RecyclerView.ViewHolder {
         QRCodeInfo qrCodeInfo;
         Bitmap image;
-        Button btnEditQRCode, btnDeleteQRCode;
+        ImageView btnEditQRCode, btnDeleteQRCode;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            initView();
-        }
+            btnEditQRCode = itemView.findViewById(R.id.imageView_cardQRCode_edit);
+            btnDeleteQRCode = itemView.findViewById(R.id.imageView_cardQRCode_delete);
 
-        private void initView() {
+            btnEditQRCode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    fetchQRCodeImageBeforeEditing();
+                }
+            });
+
+            btnDeleteQRCode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteQRCode();
+                }
+            });
         }
 
         private void fetchQRCodeImageBeforeEditing(){
-            //TODO: Mettre dans l'activity si possible parce qu'on créer un ImageService à chaque view dans le Recycler adapter
 
             //Méthode Synchrone car on à besoins de l'image avant d'édit.
             if(image == null && qrCodeInfo.getImageRef() != null) {
@@ -78,6 +95,7 @@ public class QRCodeRecyclerAdapter extends RecyclerView.Adapter<QRCodeRecyclerAd
         }
 
         private void editQRCode() {
+            Intent editQRCodeIntent = new Intent();
             //TODO: Ouvrir l'Activity qui va probablement se nommer addOrEditQRCodeActivity
             // Envoyer qrCodeInfo dans l'Activity
             // Après c'est une gestion facile de l'activité
