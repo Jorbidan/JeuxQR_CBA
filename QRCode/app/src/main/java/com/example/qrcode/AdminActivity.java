@@ -15,6 +15,7 @@ import com.example.qrcode.authentication.AuthenticationFactory;
 import com.example.qrcode.authentication.AuthenticationService;
 import com.example.qrcode.gameManager.GameFactory;
 import com.example.qrcode.gameManager.GameService;
+import com.example.qrcode.gameManager.QRCodeInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -75,9 +76,9 @@ public class AdminActivity extends AppCompatActivity {
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gameService.getQueryQRCode().addOnCompleteListener(new OnCompleteListener<List<DocumentSnapshot>>() {
+                gameService.getQueryQRCode().addOnCompleteListener(new OnCompleteListener<List<QRCodeInfo>>() {
                     @Override
-                    public void onComplete(@NonNull Task<List<DocumentSnapshot>> task) {
+                    public void onComplete(@NonNull Task<List<QRCodeInfo>> task) {
                         if (!task.isSuccessful()){
                             Log.e("TAG",task.getException().getMessage());
                         }

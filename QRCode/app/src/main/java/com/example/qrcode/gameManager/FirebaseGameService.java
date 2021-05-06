@@ -185,18 +185,19 @@ public class FirebaseGameService implements GameService {
     }
 
     @Override
-    public Task<List<DocumentSnapshot>> getQueryQRCode() {
+    public Task<List<QRCodeInfo>> getQueryQRCode() {
          CollectionReference QRCodes = gameDatabase.collection("QRCodes");
-         Continuation<QuerySnapshot,List<DocumentSnapshot>> getQRCodesContinuation = new Continuation<QuerySnapshot, List<DocumentSnapshot>>() {
+         Continuation<QuerySnapshot,List<QRCodeInfo>> getQRCodesContinuation = new Continuation<QuerySnapshot, List<QRCodeInfo>>() {
              @Override
-             public List<DocumentSnapshot> then(@NonNull Task<QuerySnapshot> task) throws Exception {
+             public List<QRCodeInfo> then(@NonNull Task<QuerySnapshot> task) throws Exception {
                  if(!task.isSuccessful()){
                      Log.e(TAG,"getQueryQRCode : "+ task.getException().getMessage());
+                 }else{
+                     for(int i = 0;i < task.getResult().getDocuments().size();i++){
+                         Log.e(TAG,"GetQueryQRCode : document : "+task.getResult().getDocuments().get(i).getId());
+                     }
                  }
-                for(int i = 0;i < task.getResult().getDocuments().size();i++){
-                    Log.e(TAG,"GetQueryQRCode : document : "+task.getResult().getDocuments().get(i).getId());
-                }
-                 return task.getResult().getDocuments();
+                 return task.getResult().toObjects(QRCodeInfo.class);
              }
          };
         return QRCodes.get().continueWith(getQRCodesContinuation);

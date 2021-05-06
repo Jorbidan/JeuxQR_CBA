@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface GameService {
     Task<String> getQRCodeReference(String qrCode);
-    Task<List<DocumentSnapshot>> getQueryQRCode();
+    Task<List<QRCodeInfo>> getQueryQRCode();
     Task<String> createGame(OnGameCreate onGameCreate);
     Task<Boolean> checkGameExist(String gameCode);
     Task<Void> joinGame(String gameCode, String playerName);
