@@ -7,11 +7,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.view.View;
 
-import com.example.qrcode.ImageManager.ImageFactory;
 import com.example.qrcode.ImageManager.ImageService;
 import com.example.qrcode.gameManager.GameFactory;
 import com.example.qrcode.gameManager.GameService;
-import com.google.firebase.storage.StorageReference;
+import com.example.qrcode.gameManager.QRCodeInfo;
 
 import java.util.ArrayList;
 import java.util.List;

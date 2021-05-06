@@ -1,4 +1,4 @@
-package com.example.qrcode;
+package com.example.qrcode.gameManager;
 
 public class QRCodeInfo {
     private static String QRCode, imageRef, title, description, question, reponse, indice;

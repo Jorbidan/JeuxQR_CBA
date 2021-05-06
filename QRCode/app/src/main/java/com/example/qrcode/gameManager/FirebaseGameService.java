@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -45,6 +46,7 @@ public class FirebaseGameService implements GameService {
         };
         return QRCodes.document(qrCode).get().continueWith(QRCodeReferenceContinuation);
     }
+
 
     @Override
     public Task<String> createGame(OnGameCreate onGameCreate) {
@@ -182,6 +184,23 @@ public class FirebaseGameService implements GameService {
         return null;
     }
 
+    @Override
+    public Task<List<DocumentSnapshot>> getQueryQRCode() {
+         CollectionReference QRCodes = gameDatabase.collection("QRCodes");
+         Continuation<QuerySnapshot,List<DocumentSnapshot>> getQRCodesContinuation = new Continuation<QuerySnapshot, List<DocumentSnapshot>>() {
+             @Override
+             public List<DocumentSnapshot> then(@NonNull Task<QuerySnapshot> task) throws Exception {
+                 if(!task.isSuccessful()){
+                     Log.e(TAG,"getQueryQRCode : "+ task.getException().getMessage());
+                 }
+                for(int i = 0;i < task.getResult().getDocuments().size();i++){
+                    Log.e(TAG,"GetQueryQRCode : document : "+task.getResult().getDocuments().get(i).getId());
+                }
+                 return task.getResult().getDocuments();
+             }
+         };
+        return QRCodes.get().continueWith(getQRCodesContinuation);
+    }
 
     private String generateGameCode() {
         Random rand = new Random();

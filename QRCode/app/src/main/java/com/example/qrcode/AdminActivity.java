@@ -17,8 +17,14 @@ import com.example.qrcode.gameManager.GameFactory;
 import com.example.qrcode.gameManager.GameService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.List;
 
 public class AdminActivity extends AppCompatActivity {
+
+    Button btnTest;
+
     Button btnMenuPrincipale;
     Button btnCreateGame;
     TextView textPartieEnCours;
@@ -33,6 +39,7 @@ public class AdminActivity extends AppCompatActivity {
         btnMenuPrincipale = findViewById(R.id.btn_admin_menuPrincipale);
         btnCreateGame = findViewById(R.id.btn_admin_createGame);
         textPartieEnCours = findViewById(R.id.text_admin_partieEnCours);
+        btnTest = findViewById(R.id.button_testingGetQRCode);
         setListeners();
     }
 
@@ -60,6 +67,19 @@ public class AdminActivity extends AppCompatActivity {
                         }
                         else{
                             textPartieEnCours.setText(task.getResult());
+                        }
+                    }
+                });
+            }
+        });
+        btnTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameService.getQueryQRCode().addOnCompleteListener(new OnCompleteListener<List<DocumentSnapshot>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<List<DocumentSnapshot>> task) {
+                        if (!task.isSuccessful()){
+                            Log.e("TAG",task.getException().getMessage());
                         }
                     }
                 });
