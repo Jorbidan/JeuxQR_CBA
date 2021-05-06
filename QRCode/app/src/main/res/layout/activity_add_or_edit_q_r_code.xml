@@ -6,4 +6,97 @@
     android:layout_height="match_parent"
     tools:context=".addOrEditQRCodeActivity">
 
+    <TextView
+        android:id="@+id/textView_addOrEditQRCode_QRCodeId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:labelFor="@id/editText_addOrEditQRCode_QRCodeId"
+        android:text="ID Code QR :"
+        app:layout_constraintBottom_toBottomOf="@+id/editText_addOrEditQRCode_QRCodeId"
+        app:layout_constraintEnd_toStartOf="@+id/editText_addOrEditQRCode_QRCodeId"
+        app:layout_constraintTop_toTopOf="@+id/editText_addOrEditQRCode_QRCodeId" />
+
+    <TextView
+        android:id="@+id/textView_addOrEditQRCode_action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Modification"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/editText_addOrEditQRCode_QRCodeId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:ems="10"
+        android:hint="ID Code QR"
+        android:inputType="textPersonName"
+        android:labelFor="@id/textView_addOrEditQRCode_QRCodeId"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView_addOrEditQRCode_action" />
+
+    <Button
+        android:id="@+id/btn_addOrEditQRCode_ScanQRCodeId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Scan"
+        app:layout_constraintBottom_toBottomOf="@+id/editText_addOrEditQRCode_QRCodeId"
+        app:layout_constraintStart_toEndOf="@+id/editText_addOrEditQRCode_QRCodeId"
+        app:layout_constraintTop_toTopOf="@+id/editText_addOrEditQRCode_QRCodeId" />
+
+    <EditText
+        android:id="@+id/editText_addOrEditQRCode_Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Titre"
+        android:inputType="textPersonName"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_addOrEditQRCode_QRCodeId" />
+
+    <TextView
+        android:id="@+id/textView_addOrEditQRCode_Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Titre :"
+        app:layout_constraintBottom_toBottomOf="@+id/editText_addOrEditQRCode_Title"
+        app:layout_constraintEnd_toStartOf="@+id/editText_addOrEditQRCode_Title"
+        app:layout_constraintTop_toTopOf="@+id/editText_addOrEditQRCode_Title" />
+
+    <EditText
+        android:id="@+id/editText_addOrEditQRCode_description"
+        android:layout_width="192dp"
+        android:layout_height="128dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_addOrEditQRCode_Title" />
+
+    <TextView
+        android:id="@+id/textView_addOrEditQRCode_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:text="Description :"
+        app:layout_constraintEnd_toStartOf="@+id/editText_addOrEditQRCode_description"
+        app:layout_constraintTop_toTopOf="@+id/editText_addOrEditQRCode_description" />
 </androidx.constraintlayout.widget.ConstraintLayout>
