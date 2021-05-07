@@ -1,7 +1,7 @@
 package com.example.qrcode.gameManager;
 
 public class QRCodeInfo {
-    private static String QRCode, imageRef, title, description, question, reponse, indice;
+    private static String QRCode, imageRef, title, description, question, answer, hint;
 
     public static String getQRCode() {
         return QRCode;
@@ -43,19 +43,19 @@ public class QRCodeInfo {
         QRCodeInfo.question = question;
     }
 
-    public static String getReponse() {
-        return reponse;
+    public static String getAnswer() {
+        return answer;
     }
 
-    public static void setReponse(String reponse) {
-        QRCodeInfo.reponse = reponse;
+    public static void setAnswer(String answer) {
+        QRCodeInfo.answer = answer;
     }
 
-    public static String getIndice() {
-        return indice;
+    public static String getHint() {
+        return hint;
     }
 
-    public static void setIndice(String indice) {
-        QRCodeInfo.indice = indice;
+    public static void setHint(String hint) {
+        QRCodeInfo.hint = hint;
     }
 }

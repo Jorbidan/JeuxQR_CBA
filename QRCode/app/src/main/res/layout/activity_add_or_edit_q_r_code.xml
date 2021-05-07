@@ -36,7 +36,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
         android:ems="10"
-        android:hint="ID Code QR"
         android:inputType="textPersonName"
         android:labelFor="@id/textView_addOrEditQRCode_QRCodeId"
         android:textSize="14sp"
@@ -60,7 +59,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:ems="10"
-        android:hint="Titre"
         android:inputType="textPersonName"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -75,7 +73,8 @@
         android:text="Titre :"
         app:layout_constraintBottom_toBottomOf="@+id/editText_addOrEditQRCode_Title"
         app:layout_constraintEnd_toStartOf="@+id/editText_addOrEditQRCode_Title"
-        app:layout_constraintTop_toTopOf="@+id/editText_addOrEditQRCode_Title" />
+        app:layout_constraintTop_toTopOf="@+id/editText_addOrEditQRCode_Title"
+        app:layout_constraintVertical_bias="0.38" />
 
     <EditText
         android:id="@+id/editText_addOrEditQRCode_description"
@@ -99,4 +98,113 @@
         android:text="Description :"
         app:layout_constraintEnd_toStartOf="@+id/editText_addOrEditQRCode_description"
         app:layout_constraintTop_toTopOf="@+id/editText_addOrEditQRCode_description" />
+
+    <TextView
+        android:id="@+id/textView_addOrEditQRCode_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Question :"
+        app:layout_constraintBottom_toBottomOf="@+id/editText_addOrEditQRCode_question"
+        app:layout_constraintEnd_toStartOf="@+id/editText_addOrEditQRCode_question"
+        app:layout_constraintTop_toTopOf="@+id/editText_addOrEditQRCode_question" />
+
+    <TextView
+        android:id="@+id/textView_addOrEditQRCode_answer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Reponse :"
+        app:layout_constraintBottom_toBottomOf="@+id/editText_addOrEditQRCode_answer"
+        app:layout_constraintEnd_toStartOf="@+id/editText_addOrEditQRCode_answer"
+        app:layout_constraintTop_toTopOf="@+id/editText_addOrEditQRCode_answer" />
+
+    <EditText
+        android:id="@+id/editText_addOrEditQRCode_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_addOrEditQRCode_description" />
+
+    <EditText
+        android:id="@+id/editText_addOrEditQRCode_answer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_addOrEditQRCode_question" />
+
+    <ImageView
+        android:id="@+id/imageView_addOrEditQRCode_imageChosen"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginTop="32dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_addOrEditQRCode_answer"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/btn_addOrEditQRCode_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Choisir"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_addOrEditQRCode_imageChosen"
+        app:layout_constraintStart_toEndOf="@+id/imageView_addOrEditQRCode_imageChosen"
+        app:layout_constraintTop_toTopOf="@+id/imageView_addOrEditQRCode_imageChosen"
+        app:layout_constraintVertical_bias="0.512" />
+
+    <TextView
+        android:id="@+id/textView_addOrEditQRCode_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Image :"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_addOrEditQRCode_imageChosen"
+        app:layout_constraintEnd_toStartOf="@+id/imageView_addOrEditQRCode_imageChosen"
+        app:layout_constraintTop_toTopOf="@+id/imageView_addOrEditQRCode_imageChosen"
+        app:layout_constraintVertical_bias="0.504" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/btn_addOrEditQRCode_AddOrEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sauvegarder"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_addOrEditQRCode_Cancel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btn_addOrEditQRCode_Cancel"
+            android:layout_width="93dp"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btn_addOrEditQRCode_AddOrEdit"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

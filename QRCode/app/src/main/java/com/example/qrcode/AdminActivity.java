@@ -24,10 +24,7 @@ import java.util.List;
 
 public class AdminActivity extends AppCompatActivity {
 
-    Button btnTest;
-
-    Button btnMenuPrincipale;
-    Button btnCreateGame;
+    Button btnMenuPrincipale, btnCreateGame, btnManageQrCode;
     TextView textPartieEnCours;
     GameService gameService;
     AuthenticationService authenticationService;
@@ -39,8 +36,9 @@ public class AdminActivity extends AppCompatActivity {
         authenticationService = AuthenticationFactory.getInstance();
         btnMenuPrincipale = findViewById(R.id.btn_admin_menuPrincipale);
         btnCreateGame = findViewById(R.id.btn_admin_createGame);
+        btnManageQrCode = findViewById(R.id.btn_admin_manageQrCodes);
         textPartieEnCours = findViewById(R.id.text_admin_partieEnCours);
-        btnTest = findViewById(R.id.button_testingGetQRCode);
+
         setListeners();
     }
 
@@ -73,17 +71,12 @@ public class AdminActivity extends AppCompatActivity {
                 });
             }
         });
-        btnTest.setOnClickListener(new View.OnClickListener() {
+        btnManageQrCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gameService.getQueryQRCode().addOnCompleteListener(new OnCompleteListener<List<QRCodeInfo>>() {
-                    @Override
-                    public void onComplete(@NonNull Task<List<QRCodeInfo>> task) {
-                        if (!task.isSuccessful()){
-                            Log.e("TAG",task.getException().getMessage());
-                        }
-                    }
-                });
+                Intent goToQRCodeActivityIntent = new Intent(getApplicationContext(),QRCodeActivity.class);
+                startActivity(goToQRCodeActivityIntent);
+                finish();
             }
         });
     }

@@ -30,14 +30,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageChooseActivity extends AppCompatActivity implements View.OnClickListener{
+public class ImageChooseActivity extends AppCompatActivity implements View.OnClickListener, ImageRecyclerAdapter.ImageAdapterInterface {
+    private final int IMAGE_CHOSEN_TAG = 7;
     private final int PICK_IMAGE = 1;
-    Button btnAddImage;
+    Button btnAddImage, btnCancel;
     ImageService imageService;
     RecyclerView recyclerView;
     RecyclerView.Adapter recyclerViewAdapter;
     RecyclerView.LayoutManager layoutManager;
     List<StorageReference> storageReferenceList = new ArrayList<>();
+    Intent returnIntent;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -59,11 +61,17 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+    @Override
+    public void finish() {
+        setResult(IMAGE_CHOSEN_TAG, returnIntent);
+        super.finish();
+    }
+
     private void initViews() {
         btnAddImage = findViewById(R.id.btn_imageChoose_addImage);
         btnAddImage.setOnClickListener(this);
-
-        //Initiation du recyclerView pour avoir une liste d'images
+        btnCancel = findViewById(R.id.btn_imageChoose_cancel);
+        btnCancel.setOnClickListener(this);
         recyclerView = findViewById(R.id.recyclerView_imageChoose);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
@@ -91,6 +99,8 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
             case R.id.btn_imageChoose_addImage:
                 openGalleryToAddImage();
                 break;
+            case R.id.btn_imageChoose_cancel:
+                finish();
         }
     }
 
@@ -139,5 +149,12 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
             }
         });
         dialogSetNameAndConfirm.show();
+    }
+
+    @Override
+    public void imageChosen(Bitmap chosenImage, String imageRef) {
+        returnIntent.putExtra("imageChosen", chosenImage);
+        returnIntent.putExtra("imageRef", imageRef);
+        finish();
     }
 }

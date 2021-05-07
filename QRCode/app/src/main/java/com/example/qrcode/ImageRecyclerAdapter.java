@@ -1,5 +1,6 @@
 package com.example.qrcode;
 
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.qrcode.gameManager.GameService;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
@@ -16,6 +18,9 @@ import java.util.List;
 public class ImageRecyclerAdapter  extends RecyclerView.Adapter<ImageRecyclerAdapter.MyViewHolder>{
     private List<StorageReference> storageReferences;
 
+    public interface ImageAdapterInterface {
+        void imageChosen(Bitmap chosenImage, String imageRef);
+    }
     public ImageRecyclerAdapter(List<StorageReference> storageReferences){this.storageReferences = storageReferences;};
 
     @NonNull

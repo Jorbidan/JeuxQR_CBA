@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,6 +45,8 @@ public class QRCodeRecyclerAdapter extends RecyclerView.Adapter<QRCodeRecyclerAd
     public void onBindViewHolder(@NonNull QRCodeRecyclerAdapter.MyViewHolder holder, int position) {
         QRCodeInfo qrCodeInfoBind = QRCodesInfo.get(position);
         holder.qrCodeInfo = qrCodeInfoBind;
+        holder.textView_QRCodeId.setText(qrCodeInfoBind.getQRCode());
+        holder.textView_title.setText(qrCodeInfoBind.getTitle());
     }
 
     @Override
@@ -53,11 +56,13 @@ public class QRCodeRecyclerAdapter extends RecyclerView.Adapter<QRCodeRecyclerAd
         QRCodeInfo qrCodeInfo;
         Bitmap image;
         ImageView btnEditQRCode, btnDeleteQRCode;
+        TextView textView_title, textView_QRCodeId;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             btnEditQRCode = itemView.findViewById(R.id.imageView_cardQRCode_edit);
             btnDeleteQRCode = itemView.findViewById(R.id.imageView_cardQRCode_delete);
-
+            textView_title = itemView.findViewById(R.id.textView_cardQRCode_title);
+            textView_QRCodeId = itemView.findViewById(R.id.textView_cardQRCode_QRCodeId);
             btnEditQRCode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
