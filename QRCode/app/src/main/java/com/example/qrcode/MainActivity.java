@@ -155,9 +155,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                                 goToLobbyActivity();
                             }
-                            else{
-                                Toast.makeText(MainActivity.this,"Le code entrée n'est pas valide.",Toast.LENGTH_SHORT).show();
-                                Log.e("CHECKGAMECODE", "game " + gameCode + " doesn't exist");
+                            else {
+                                Toast.makeText(MainActivity.this,"Le code entrée n'est pas valide ou la partie est déjà démarrer.",Toast.LENGTH_SHORT).show();
+                                Log.e("CHECKGAMECODE", "game " + gameCode + " doesn't exist/is started");
                             }
                         }
                     });
@@ -181,7 +181,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void goToLobbyActivity() {
             Intent goToLobbyActivity = new Intent(this,LobbyActivity.class);
             startActivity(goToLobbyActivity);
-            finish();
     }
 
 }

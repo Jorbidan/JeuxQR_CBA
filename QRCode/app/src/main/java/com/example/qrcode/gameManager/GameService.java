@@ -15,10 +15,10 @@ public interface GameService {
     Task<String> getCurrentGameCodeOfPlayer(String playerName);
     Task<Void> endGame(String gameCode);
     Void subscribeToPlayerList(String gameCode, OnPlayerInGameChange onPlayerInGameChange);
-    /*
+    Task<Void> deletePlayerInGame(String playerName, String gameCode);
+    Subscription subscribeToGame(String gameCode, OnGameChange onGameChange);
     Task<Void> startGame(String gameCode);
-    Task<Void> endGame(String gameCode);
-    */
+
     public interface OnPlayerInGameChange{
         void joinGame(String playerName);
         void leaveGame(String playerName);
@@ -26,6 +26,15 @@ public interface GameService {
 
     public interface OnGameCreate{
         void OnCreateGame();
+    }
+    public interface OnGameChange{
+        void adminStopGame();
+        void gameLaunch();
+        void finishRound();
+        void nextRound();
+    }
+    public interface Subscription{
+        void unsubscribe();
     }
 
 }
