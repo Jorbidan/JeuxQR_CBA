@@ -11,6 +11,7 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -308,5 +309,17 @@ public class FirebaseGameService implements GameService {
         return gameCode;
     }
 
+    private Task<Void> addQRCode(QRCodeInfo qrCodeInfo){
+        CollectionReference qrCodesRef = gameDatabase.collection("QRCodes");
+
+        Continuation<Void, DocumentReference> continuationAddQRCode = new Continuation<Void, DocumentReference>() {
+            @Override
+            public Void then(@NonNull Task<Void> task) throws Exception {
+                return null;
+            }
+        };
+
+       return qrCodesRef.add(qrCodeInfo).continueWith(continuationAddQRCode);
+    }
 
 }
