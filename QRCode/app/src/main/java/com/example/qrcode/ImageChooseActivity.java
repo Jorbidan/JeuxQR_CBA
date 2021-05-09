@@ -30,9 +30,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.grpc.Context;
+
 public class ImageChooseActivity extends AppCompatActivity implements View.OnClickListener, ImageRecyclerAdapter.ImageAdapterInterface {
-    private final int IMAGE_CHOSEN_TAG = 7;
     private final int PICK_IMAGE = 1;
+    private final int TAG_IMAGE_CHOSEN = 7;
     Button btnAddImage, btnCancel;
     ImageService imageService;
     RecyclerView recyclerView;
@@ -56,6 +58,7 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_choose);
+        returnIntent = new Intent();
         imageService = ImageFactory.getInstance();
         initViews();
 
@@ -63,7 +66,7 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void finish() {
-        setResult(IMAGE_CHOSEN_TAG, returnIntent);
+        setResult(TAG_IMAGE_CHOSEN, returnIntent);
         super.finish();
     }
 
@@ -76,7 +79,7 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerViewAdapter = new ImageRecyclerAdapter(storageReferenceList);
+        recyclerViewAdapter = new ImageRecyclerAdapter(storageReferenceList, this);
         recyclerView.setAdapter(recyclerViewAdapter);
 
         imageService.listAllImages().addOnCompleteListener(new OnCompleteListener<List<StorageReference>>() {
@@ -143,7 +146,16 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
                 if(imageName == ""){
                     Toast.makeText(getApplicationContext(), "L'image doit avoir un nom", Toast.LENGTH_SHORT).show();
                 }else{
-                    imageService.uploadImage(bmp, imageName+".jpg");
+                    imageService.uploadImage(bmp, imageName+".jpg").addOnCompleteListener(new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+                            if(task.isSuccessful()){
+                                StorageReference storageReference = (StorageReference) task.getResult();
+                                storageReferenceList.add(storageReference);
+                                recyclerViewAdapter.notifyDataSetChanged();
+                            }
+                        }
+                    });
                     dialogSetNameAndConfirm.dismiss();
                 }
             }
@@ -152,9 +164,30 @@ public class ImageChooseActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void imageChosen(Bitmap chosenImage, String imageRef) {
-        returnIntent.putExtra("imageChosen", chosenImage);
+    public void imageChosen(int position) {
+        StorageReference storageReference = storageReferenceList.get(position);
+        String imageRef = storageReference.getName();
         returnIntent.putExtra("imageRef", imageRef);
         finish();
     }
+
+    @Override
+    public void imageDelete(int position) {
+        StorageReference storageReference = storageReferenceList.get(position);
+        String imageRef = storageReference.getName();
+        imageService.deleteImage(imageRef).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    storageReferenceList.remove(position);
+                    Toast.makeText(getApplicationContext(), "Image supprimée", Toast.LENGTH_SHORT);
+                    recyclerViewAdapter.notifyDataSetChanged();
+                }
+                else{
+                    Log.e("imageChooseActivity", task.getException().toString());
+                }
+            }
+        });
+    }
+
 }

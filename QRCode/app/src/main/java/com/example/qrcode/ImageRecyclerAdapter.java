@@ -1,6 +1,7 @@
 package com.example.qrcode;
 
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,11 @@ import java.util.List;
 
 public class ImageRecyclerAdapter  extends RecyclerView.Adapter<ImageRecyclerAdapter.MyViewHolder>{
     private List<StorageReference> storageReferences;
-
-    public interface ImageAdapterInterface {
-        void imageChosen(Bitmap chosenImage, String imageRef);
-    }
-    public ImageRecyclerAdapter(List<StorageReference> storageReferences){this.storageReferences = storageReferences;};
+    private ImageAdapterInterface imageAdapterInterface;
+    public ImageRecyclerAdapter(List<StorageReference> storageReferences, ImageAdapterInterface imageAdapterInterface){
+        this.storageReferences = storageReferences;
+        this.imageAdapterInterface = imageAdapterInterface;
+    };
 
     @NonNull
     @Override
@@ -36,20 +37,41 @@ public class ImageRecyclerAdapter  extends RecyclerView.Adapter<ImageRecyclerAda
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         StorageReference storageReferenceBind = storageReferences.get(position);
         holder.textViewImageName.setText(storageReferenceBind.getName());
-
+        holder.imageAdapterInterface = imageAdapterInterface;
+        holder.position = position;
     }
 
     @Override
     public int getItemCount() {return storageReferences.size();}
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
+        int position;
         TextView textViewImageName;
         Button btn_chooseImage, btn_deleteImage;
+        ImageAdapterInterface imageAdapterInterface;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewImageName = itemView.findViewById(R.id.textView_cardImageChoose_imageName);
             btn_chooseImage = itemView.findViewById(R.id.btn_cardImageChoose_chooseImage);
             btn_deleteImage = itemView.findViewById(R.id.btn_cardImageChoose_deleteImage);
+            btn_chooseImage.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                   imageAdapterInterface.imageChosen(position);
+                }
+            });
+            btn_deleteImage.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {imageAdapterInterface.imageDelete(position);}
+            });
         }
+
+    }
+
+    public interface ImageAdapterInterface {
+        void imageChosen(int position);
+        void imageDelete(int position);
     }
 }
