@@ -12,6 +12,7 @@ public interface GameService {
     Task<List<QRCodeInfo>> getQueryQRCode();
     Task<QRCodeInfo> getQRCode(String QRCodeID);
     Task<Void> setQRCode(String QRCodeID, QRCodeInfo QRCodeInfo);
+    Task<Void> deleteQRCode(String QRCodeID);
     Task<String> createGame(OnGameCreate onGameCreate);
     Task<Boolean> checkGameExist(String gameCode);
     Task<Void> joinGame(String gameCode, String playerName);
