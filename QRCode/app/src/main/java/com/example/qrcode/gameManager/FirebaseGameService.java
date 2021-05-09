@@ -302,6 +302,59 @@ public class FirebaseGameService implements GameService {
         return QRCodes.get().continueWith(getQRCodesContinuation);
     }
 
+    @Override
+    public Task<QRCodeInfo> getQRCode(String QRCodeID) {
+        CollectionReference QRCodes = gameDatabase.collection("QRCodes");
+        Continuation<DocumentSnapshot,QRCodeInfo> getQRCodeContinuation = new Continuation<DocumentSnapshot,QRCodeInfo>() {
+            @Override
+            public QRCodeInfo then(@NonNull Task<DocumentSnapshot> task) throws Exception {
+                QRCodeInfo taskResult = null;
+                if(!task.isSuccessful()){
+                    Log.e(TAG,"getQueryQRCode : "+ task.getException().getMessage());
+                }else{
+                    taskResult = task.getResult().toObject(QRCodeInfo.class);
+                   Log.e(TAG,"GetQueryQRCode : document : "+task.getResult());
+
+                }
+                return taskResult;
+            }
+        };
+        return QRCodes.document(QRCodeID).get().continueWith(getQRCodeContinuation);
+    }
+
+    @Override
+    public Task<Void> setQRCode(String QRCodeID, QRCodeInfo QRCodeInfo) {
+        CollectionReference QRCodes = gameDatabase.collection("QRCodes");
+        Continuation<Void,Void> getQRCodeContinuation = new Continuation<Void,Void>() {
+            @Override
+            public Void then(@NonNull Task<Void> task) throws Exception {
+                if(!task.isSuccessful()){
+                    Log.e(TAG,"getQueryQRCode : "+ task.getException().getMessage());
+                }else{
+                    //taskResult = task.getResult().toObject(QRCodeInfo.class);
+                    Log.e(TAG,"GetQueryQRCode : document : "+task.getResult());
+                }
+                return null;
+            }
+        };
+        return QRCodes.document(QRCodeID).set(QRCodeInfo).continueWith(getQRCodeContinuation);
+    }
+
+    @Override
+    public Task<Void> deleteQRCode(String QRCodeID) {
+        CollectionReference QRCodes = gameDatabase.collection("QRCodes");
+        Continuation<Void,Void> getQRCodeContinuation = new Continuation<Void,Void>() {
+            @Override
+            public Void then(@NonNull Task<Void> task) throws Exception {
+                if(!task.isSuccessful()){
+                    Log.e(TAG,"getQueryQRCode : "+ task.getException().getMessage());
+                }
+                return null;
+            }
+        };
+        return QRCodes.document(QRCodeID).delete().continueWith(getQRCodeContinuation);
+    }
+
     private String generateGameCode() {
         Random rand = new Random();
         int randomCode = rand.nextInt(899999) + 100000;
