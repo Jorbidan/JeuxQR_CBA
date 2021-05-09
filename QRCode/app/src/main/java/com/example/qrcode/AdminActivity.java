@@ -23,8 +23,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 public class AdminActivity extends AppCompatActivity {
+    final String TAG = "AdminActivity";
 
-    Button btnMenuPrincipale, btnCreateGame, btnManageQrCode, btnEndGame;
+    Button btnMenuPrincipale, btnCreateGame, btnManageQrCode, btnEndGame, btnStartGame;
     TextView textPartieEnCours;
     GameService gameService;
     AuthenticationService authenticationService;
@@ -35,6 +36,7 @@ public class AdminActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin);
         gameService = GameFactory.getInstance();
         authenticationService = AuthenticationFactory.getInstance();
+        btnStartGame = findViewById(R.id.button_admin_startGame);
         btnEndGame = findViewById(R.id.btn_admin_endgame);
         btnMenuPrincipale = findViewById(R.id.btn_admin_menuPrincipale);
         btnCreateGame = findViewById(R.id.btn_admin_createGame);
@@ -70,6 +72,7 @@ public class AdminActivity extends AppCompatActivity {
                             textPartieEnCours.setText(gameCode);
                             btnCreateGame.setVisibility(View.INVISIBLE);
                             btnEndGame.setVisibility(View.VISIBLE);
+                            btnStartGame.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -96,6 +99,7 @@ public class AdminActivity extends AppCompatActivity {
                                 textPartieEnCours.setText("Aucune partie en cours");
                                 btnCreateGame.setVisibility(View.VISIBLE);
                                 btnEndGame.setVisibility(View.INVISIBLE);
+                                btnStartGame.setVisibility(View.INVISIBLE);
                                 Toast.makeText(AdminActivity.this,"La partie est terminer.",Toast.LENGTH_SHORT).show();
                             }}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -105,6 +109,18 @@ public class AdminActivity extends AppCompatActivity {
                     }
                 }).show();
 
+            }
+        });
+        btnStartGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameService.startGame(gameCode).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.e(TAG,gameCode +" has started.");
+                        btnStartGame.setVisibility(View.INVISIBLE);
+                    }
+                });
             }
         });
     }

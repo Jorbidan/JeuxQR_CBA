@@ -48,6 +48,26 @@ public class FirebaseGameService implements GameService {
         return QRCodes.document(qrCode).get().continueWith(QRCodeReferenceContinuation);
     }
 
+    @Override
+    public Task<DocumentSnapshot> getQRCodeFromGame(String gameCode, String qrCodeID) {
+        CollectionReference QRCodes = gameDatabase.collection("Games").document(gameCode).collection("QRCodes");
+        Continuation<DocumentSnapshot,DocumentSnapshot> QRCodeFromGameContinuation = new Continuation<DocumentSnapshot, DocumentSnapshot>() {
+            @Override
+            public DocumentSnapshot then(@NonNull Task<DocumentSnapshot> task) throws Exception {
+                DocumentSnapshot qrCodeMap = null;
+                if (!task.isSuccessful()){
+                    Log.e(TAG,"getQRCodeFromGame : " + task.getException().getMessage());
+                }
+                else{
+                    qrCodeMap = task.getResult();
+                }
+                Log.e(TAG,"getQRCodeFromGame : " +task.getResult().get("indice"));
+                return qrCodeMap;
+            }
+        };
+        return QRCodes.document(qrCodeID).get().continueWith(QRCodeFromGameContinuation);
+    }
+
 
     @Override
     public Task<String> createGame(OnGameCreate onGameCreate) {
@@ -250,7 +270,16 @@ public class FirebaseGameService implements GameService {
 
     @Override
     public Task<Void> startGame(String gameCode) {
-        return gameDatabase.collection("Games").document(gameCode).update("joinable",false);
+        Continuation<Void,Void> startGameContinuation = new Continuation<Void, Void>() {
+            @Override
+            public Void then(@NonNull Task<Void> task) throws Exception {
+                if (!task.isSuccessful()){
+                    Log.e(TAG, "startGame : "+ task.getException().getMessage());
+                }
+                return null;
+            }
+        };
+        return gameDatabase.collection("Games").document(gameCode).update("joinable",false).continueWith(startGameContinuation);
     }
 
     @Override

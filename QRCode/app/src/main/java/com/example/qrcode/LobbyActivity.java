@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -106,23 +107,16 @@ public class LobbyActivity extends AppCompatActivity {
         subscriptionToGame = gameService.subscribeToGame(gameCode, new GameService.OnGameChange() {
             @Override
             public void adminStopGame() {
+                subscriptionToGame.unsubscribe();
                 alertgameStop("La partie est terminer! Retourner au point de départ pour savoir le résultat!");
             }
 
             @Override
             public void gameLaunch() {
-
+                subscriptionToGame.unsubscribe();
+                goToGameActivity();
             }
 
-            @Override
-            public void finishRound() {
-
-            }
-
-            @Override
-            public void nextRound() {
-
-            }
         });
     }
 
@@ -142,6 +136,13 @@ public class LobbyActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         gameService.deletePlayerInGame(displayName,gameCode);
+        subscriptionToGame.unsubscribe();
+        finish();
+    }
+
+    private void goToGameActivity() {
+        Intent goToGameActivity = new Intent(this,GameActivity.class);
+        startActivity(goToGameActivity);
         finish();
     }
 }
