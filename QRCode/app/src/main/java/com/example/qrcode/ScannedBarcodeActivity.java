@@ -23,8 +23,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.io.IOException;
 
 public class ScannedBarcodeActivity extends AppCompatActivity {
-
-    private final int TAG_SCAN = 3;
+    final int TAG_SCAN = 3;
     SurfaceView surfaceView;
     TextView txtBarcodeValue;
     private BarcodeDetector barcodeDetector;

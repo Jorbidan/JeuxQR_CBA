@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="TAG_SCAN">3</integer>
+    <integer name="TAG_ADD_OR_EDIT">6</integer>
+    <integer name="TAG_IMAGE_CHOSEN">7</integer>
+</resources>

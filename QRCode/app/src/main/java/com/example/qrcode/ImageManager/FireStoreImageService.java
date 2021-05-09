@@ -3,6 +3,7 @@ package com.example.qrcode.ImageManager;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -27,7 +28,7 @@ public class FireStoreImageService implements ImageService {
     public  FireStoreImageService() { this.firebaseStorage = FirebaseStorage.getInstance();}
 
     @Override
-    public Task<Void> uploadImage(Bitmap imageBitmap, String imageName) {
+    public Task<StorageReference> uploadImage(Bitmap imageBitmap, String imageName) {
         StorageReference storageRef = firebaseStorage.getReference();
         StorageReference imageRef = storageRef.child("images/"+imageName);
 
@@ -35,10 +36,10 @@ public class FireStoreImageService implements ImageService {
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
 
-        Continuation<UploadTask.TaskSnapshot, Void> uploadTaskContinuation = new Continuation<UploadTask.TaskSnapshot, Void>() {
+        Continuation<UploadTask.TaskSnapshot, StorageReference> uploadTaskContinuation = new Continuation<UploadTask.TaskSnapshot, StorageReference>() {
             @Override
-            public Void then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                return null;
+            public StorageReference then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                return imageRef;
             }
         };
 
@@ -74,6 +75,7 @@ public class FireStoreImageService implements ImageService {
             @Override
             public List<StorageReference> then(@NonNull Task<ListResult> task) throws Exception {
                 if(task.isSuccessful()){
+                    Log.d("FireStoreImageService", task.getResult().getItems().toString());
                     return task.getResult().getItems();
                 }
                 return null;
@@ -81,6 +83,13 @@ public class FireStoreImageService implements ImageService {
         };
 
         return imagesRef.listAll().continueWith(listAllImagesContinuation);
+    }
+
+    @Override
+    public Task<Void> deleteImage(String imageName) {
+        StorageReference storageRef = firebaseStorage.getReference();
+        StorageReference imageReference = storageRef.child("images/"+imageName);
+        return imageReference.delete();
     }
 
 
