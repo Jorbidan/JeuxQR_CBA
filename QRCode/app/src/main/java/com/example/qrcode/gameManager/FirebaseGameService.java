@@ -15,6 +15,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
@@ -47,11 +48,31 @@ public class FirebaseGameService implements GameService {
         return QRCodes.document(qrCode).get().continueWith(QRCodeReferenceContinuation);
     }
 
+    @Override
+    public Task<DocumentSnapshot> getQRCodeFromGame(String gameCode, String qrCodeID) {
+        CollectionReference QRCodes = gameDatabase.collection("Games").document(gameCode).collection("QRCodes");
+        Continuation<DocumentSnapshot,DocumentSnapshot> QRCodeFromGameContinuation = new Continuation<DocumentSnapshot, DocumentSnapshot>() {
+            @Override
+            public DocumentSnapshot then(@NonNull Task<DocumentSnapshot> task) throws Exception {
+                DocumentSnapshot qrCodeMap = null;
+                if (!task.isSuccessful()){
+                    Log.e(TAG,"getQRCodeFromGame : " + task.getException().getMessage());
+                }
+                else{
+                    qrCodeMap = task.getResult();
+                }
+                Log.e(TAG,"getQRCodeFromGame : " +task.getResult().get("indice"));
+                return qrCodeMap;
+            }
+        };
+        return QRCodes.document(qrCodeID).get().continueWith(QRCodeFromGameContinuation);
+    }
+
 
     @Override
     public Task<String> createGame(OnGameCreate onGameCreate) {
         Map<String, Object> game = new HashMap<>();
-        game.put("isStarted", false);
+        game.put("joinable", true);
         String gameCode = generateGameCode();
 
         CollectionReference Games = gameDatabase.collection("Games");
@@ -85,7 +106,14 @@ public class FirebaseGameService implements GameService {
             public Boolean then(@NonNull Task<DocumentSnapshot> task) throws Exception {
                 boolean exists = false;
                 if (task.isSuccessful()){
-                    exists = task.getResult().exists();
+                    if(task.getResult().exists()){
+                        if(task.getResult().get("joinable").equals(false)){
+                            exists = false;
+                        }
+                        else{
+                            exists = true;
+                        }
+                    }
                 }
                 return exists;
             }
@@ -182,6 +210,76 @@ public class FirebaseGameService implements GameService {
             }
         });
         return null;
+    }
+
+    @Override
+    public Task<Void> deletePlayerInGame(String playerName, String gameCode) {
+        CollectionReference Players = gameDatabase.collection("Games").document(gameCode).collection("Players");
+        Continuation<Void, Void> deletePlayerContinuation = new Continuation<Void, Void>()
+        {
+            @Override
+            public Void then(@NonNull Task<Void> task) throws Exception {
+                if (!task.isSuccessful()){
+                    FirebaseFirestoreException.Code errorCode =((FirebaseFirestoreException) task.getException()).getCode();
+                    switch (errorCode){
+                        case CANCELLED:
+                            throw new Exception("L'opération a été arrêtée ");
+                        case PERMISSION_DENIED:
+                            throw new Exception("Vous ne pouvez pas faire cette opération");
+                        case UNAVAILABLE:
+                            throw new Exception("Le service est indisponible");
+                        default:
+                            throw new Exception("Une erreur est survenue");
+                    }
+                }
+                return null;
+            }
+        };
+        return Players.document(playerName).delete().continueWith(deletePlayerContinuation);
+    }
+
+    @Override
+    public Subscription subscribeToGame(String gameCode, OnGameChange onGameChange) {
+        ListenerRegistration subscribe = gameDatabase.collection("Games").document(gameCode).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.e("TAG", "Listening to game document "+ gameCode +" failed.", e);
+                    return;
+                }
+                if (snapshot != null && !snapshot.exists()) {
+                    onGameChange.adminStopGame();
+                    Log.e("game state changed : ", "Game was deleted because the admin stopped the game.");
+                }
+                else{
+                    if (snapshot.get("joinable").equals(false)){
+                        onGameChange.gameLaunch();
+                        Log.e("game state changed : ","game has launched.");
+                    }
+                }
+            }
+        });
+        return new Subscription() {
+            @Override
+            public void unsubscribe() {
+                subscribe.remove();
+            }
+        };
+    }
+
+    @Override
+    public Task<Void> startGame(String gameCode) {
+        Continuation<Void,Void> startGameContinuation = new Continuation<Void, Void>() {
+            @Override
+            public Void then(@NonNull Task<Void> task) throws Exception {
+                if (!task.isSuccessful()){
+                    Log.e(TAG, "startGame : "+ task.getException().getMessage());
+                }
+                return null;
+            }
+        };
+        return gameDatabase.collection("Games").document(gameCode).update("joinable",false).continueWith(startGameContinuation);
     }
 
     @Override

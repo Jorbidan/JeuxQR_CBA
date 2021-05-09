@@ -1,10 +1,13 @@
 package com.example.qrcode;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +30,7 @@ public class LobbyActivity extends AppCompatActivity {
     String displayName;
     String gameCode;
     GameService gameService;
+    GameService.Subscription subscriptionToGame = null;
     AuthenticationService authenticationService;
     RecyclerView recyclerView;
     RecyclerView.Adapter recyclerViewAdapter;
@@ -74,6 +78,7 @@ public class LobbyActivity extends AppCompatActivity {
                     gameCode = task.getResult();
                     textCurrentGame.setText("Code de partie : " + gameCode);
                     showPlayersInLobby();
+                    subscribeToGame();
                 }
             }
         });
@@ -96,5 +101,48 @@ public class LobbyActivity extends AppCompatActivity {
 
     private void updateRecycler() {
         recyclerViewAdapter.notifyDataSetChanged();
+    }
+
+    private void subscribeToGame(){
+        subscriptionToGame = gameService.subscribeToGame(gameCode, new GameService.OnGameChange() {
+            @Override
+            public void adminStopGame() {
+                subscriptionToGame.unsubscribe();
+                alertgameStop("La partie est terminer! Retourner au point de départ pour savoir le résultat!");
+            }
+
+            @Override
+            public void gameLaunch() {
+                subscriptionToGame.unsubscribe();
+                goToGameActivity();
+            }
+
+        });
+    }
+
+    private void alertgameStop(String message) {
+        new AlertDialog.Builder(LobbyActivity.this)
+                .setTitle("Déconnexion")
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("OK !", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                        onBackPressed();
+                    }
+                }).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        gameService.deletePlayerInGame(displayName,gameCode);
+        subscriptionToGame.unsubscribe();
+        finish();
+    }
+
+    private void goToGameActivity() {
+        Intent goToGameActivity = new Intent(this,GameActivity.class);
+        startActivity(goToGameActivity);
+        finish();
     }
 }

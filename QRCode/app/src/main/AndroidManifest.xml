@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QRCode">
-        <activity android:name=".QRCodeActivity"></activity>
+        <activity android:name=".GameActivity"></activity>
+        <activity android:name=".QRCodeActivity" />
         <activity android:name=".addOrEditQRCodeActivity" />
         <activity android:name=".ImageChooseActivity" />
         <activity android:name=".LobbyActivity" />
