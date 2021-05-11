@@ -83,7 +83,6 @@ public class AdminActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent goToQRCodeActivityIntent = new Intent(getApplicationContext(),QRCodeActivity.class);
                 startActivity(goToQRCodeActivityIntent);
-                finish();
             }
         });
         btnEndGame.setOnClickListener(new View.OnClickListener() {

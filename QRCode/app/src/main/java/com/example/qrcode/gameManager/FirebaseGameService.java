@@ -18,7 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.Set;
 public class FirebaseGameService implements GameService {
     FirebaseFirestore gameDatabase;
     final String TAG = "GameService";
-
     public FirebaseGameService(){
         this.gameDatabase = FirebaseFirestore.getInstance();
     }
@@ -303,27 +301,24 @@ public class FirebaseGameService implements GameService {
     }
 
     @Override
-    public Task<QRCodeInfo> getQRCode(String QRCodeID) {
+    public Task<Boolean> getQRCode(String QRCodeID) {
         CollectionReference QRCodes = gameDatabase.collection("QRCodes");
-        Continuation<DocumentSnapshot,QRCodeInfo> getQRCodeContinuation = new Continuation<DocumentSnapshot,QRCodeInfo>() {
+        Continuation<DocumentSnapshot,Boolean> getQRCodeContinuation = new Continuation<DocumentSnapshot,Boolean>() {
             @Override
-            public QRCodeInfo then(@NonNull Task<DocumentSnapshot> task) throws Exception {
-                QRCodeInfo taskResult = null;
-                if(!task.isSuccessful()){
-                    Log.e(TAG,"getQueryQRCode : "+ task.getException().getMessage());
+            public Boolean then(@NonNull Task<DocumentSnapshot> task) throws Exception {
+                if(task.getResult().exists()){
+                    return true;
                 }else{
-                    taskResult = task.getResult().toObject(QRCodeInfo.class);
-                   Log.e(TAG,"GetQueryQRCode : document : "+task.getResult());
-
+                    return false;
                 }
-                return taskResult;
             }
         };
         return QRCodes.document(QRCodeID).get().continueWith(getQRCodeContinuation);
     }
 
     @Override
-    public Task<Void> setQRCode(String QRCodeID, QRCodeInfo QRCodeInfo) {
+    public Task<Void> setQRCode(QRCodeInfo qrCodeInfo) {
+        String QRCodeID = qrCodeInfo.getQrCode();
         CollectionReference QRCodes = gameDatabase.collection("QRCodes");
         Continuation<Void,Void> getQRCodeContinuation = new Continuation<Void,Void>() {
             @Override
@@ -337,7 +332,7 @@ public class FirebaseGameService implements GameService {
                 return null;
             }
         };
-        return QRCodes.document(QRCodeID).set(QRCodeInfo).continueWith(getQRCodeContinuation);
+        return QRCodes.document(QRCodeID).set(qrCodeInfo).continueWith(getQRCodeContinuation);
     }
 
     @Override
@@ -360,19 +355,6 @@ public class FirebaseGameService implements GameService {
         int randomCode = rand.nextInt(899999) + 100000;
         String gameCode = String.valueOf(randomCode);
         return gameCode;
-    }
-
-    private Task<Void> addQRCode(QRCodeInfo qrCodeInfo){
-        CollectionReference qrCodesRef = gameDatabase.collection("QRCodes");
-
-        Continuation<Void, DocumentReference> continuationAddQRCode = new Continuation<Void, DocumentReference>() {
-            @Override
-            public Void then(@NonNull Task<Void> task) throws Exception {
-                return null;
-            }
-        };
-
-       return qrCodesRef.add(qrCodeInfo).continueWith(continuationAddQRCode);
     }
 
 }

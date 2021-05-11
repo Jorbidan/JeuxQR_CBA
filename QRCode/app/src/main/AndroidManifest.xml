@@ -13,7 +13,8 @@
         android:theme="@style/Theme.QRCode">
         <activity android:name=".GameActivity"></activity>
         <activity android:name=".QRCodeActivity" />
-        <activity android:name=".addOrEditQRCodeActivity" />
+        <activity android:name=".addOrEditQRCodeActivity"
+                  android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".ImageChooseActivity" />
         <activity android:name=".LobbyActivity" />
         <activity android:name=".AdminLoginActivity" />

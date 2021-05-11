@@ -1,61 +1,68 @@
 package com.example.qrcode.gameManager;
 
-public class QRCodeInfo {
-    private static String QRCode, imageRef, title, description, question, answer, hint;
+import android.os.Parcelable;
 
-    public static String getQRCode() {
-        return QRCode;
+import java.io.Serializable;
+
+public class QRCodeInfo implements Serializable {
+
+
+    private String qrCode, imageRef, title, description, question, answer, hint;
+
+
+    public String getQrCode() {
+        return qrCode;
     }
 
-    public static void setQRCode(String QRCode) {
-        QRCodeInfo.QRCode = QRCode;
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
     }
 
-    public static String getImageRef() {
+    public String getImageRef() {
         return imageRef;
     }
 
-    public static void setImageRef(String imageRef) {
-        QRCodeInfo.imageRef = imageRef;
+    public void setImageRef(String imageRef) {
+        this.imageRef = imageRef;
     }
 
-    public static String getTitle() {
+    public String getTitle() {
         return title;
     }
 
-    public static void setTitle(String title) {
-        QRCodeInfo.title = title;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public static String getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public static void setDescription(String description) {
-        QRCodeInfo.description = description;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public static String getQuestion() {
+    public String getQuestion() {
         return question;
     }
 
-    public static void setQuestion(String question) {
-        QRCodeInfo.question = question;
+    public void setQuestion(String question) {
+        this.question = question;
     }
 
-    public static String getAnswer() {
+    public String getAnswer() {
         return answer;
     }
 
-    public static void setAnswer(String answer) {
-        QRCodeInfo.answer = answer;
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 
-    public static String getHint() {
+    public String getHint() {
         return hint;
     }
 
-    public static void setHint(String hint) {
-        QRCodeInfo.hint = hint;
+    public void setHint(String hint) {
+        this.hint = hint;
     }
 }

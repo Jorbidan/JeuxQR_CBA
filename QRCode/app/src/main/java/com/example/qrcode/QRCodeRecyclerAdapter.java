@@ -39,7 +39,7 @@ public class QRCodeRecyclerAdapter extends RecyclerView.Adapter<QRCodeRecyclerAd
         QRCodeInfo qrCodeInfoBind = QRCodesInfo.get(position);
         holder.position = position;
         holder.qrCodeAdapterInterface = qrCodeAdapterInterface;
-        holder.textView_QRCodeId.setText(qrCodeInfoBind.getQRCode());
+        holder.textView_QRCodeId.setText(qrCodeInfoBind.getQrCode());
         holder.textView_title.setText(qrCodeInfoBind.getTitle());
         holder.btnEditQRCode.setOnClickListener(new View.OnClickListener() {
             @Override

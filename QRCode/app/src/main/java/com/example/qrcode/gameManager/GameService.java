@@ -10,8 +10,8 @@ public interface GameService {
     Task<String> getQRCodeReference(String qrCode);
     Task<DocumentSnapshot> getQRCodeFromGame(String gameCode, String qrCodeID);
     Task<List<QRCodeInfo>> getQueryQRCode();
-    Task<QRCodeInfo> getQRCode(String QRCodeID);
-    Task<Void> setQRCode(String QRCodeID, QRCodeInfo QRCodeInfo);
+    Task<Boolean> getQRCode(String QRCodeID);
+    Task<Void> setQRCode(QRCodeInfo QRCodeInfo);
     Task<Void> deleteQRCode(String QRCodeID);
     Task<String> createGame(OnGameCreate onGameCreate);
     Task<Boolean> checkGameExist(String gameCode);

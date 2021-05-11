@@ -83,10 +83,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initViews() {
         gameService = GameFactory.getInstance();
         authenticationService = AuthenticationFactory.getInstance();
-        btnAddImage = findViewById(R.id.btn_main_chooseImage);
-        btnAddImage.setOnClickListener(this);
-        btnScanBarcode = findViewById(R.id.btn_main_scanBarcode);
-        btnScanBarcode.setOnClickListener(this);
         buttonAdmin = findViewById(R.id.btn_main_adminLogin);
         buttonAdmin.setOnClickListener(this);
         btnPlay = findViewById(R.id.btn_main_play);
@@ -102,11 +98,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
 
         switch (v.getId()) {
-            case R.id.btn_main_scanBarcode:
-             Intent intentScanBarCode =  new Intent(MainActivity.this, ScannedBarcodeActivity.class);
-             startActivityForResult(intentScanBarCode, TAG_SCAN);
-                break;
-
             case R.id.btn_main_openGallery:
                 Intent intent = new Intent();
                 intent.setType("image/*");
@@ -117,11 +108,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intentLoginAdmin = new Intent(MainActivity.this,AdminLoginActivity.class);
                 startActivity(intentLoginAdmin);
                 finish();
-                break;
-
-            case R.id.btn_main_chooseImage:
-                Intent intentAddImage = new Intent(MainActivity.this, ImageChooseActivity.class);
-                startActivity(intentAddImage);
                 break;
             case R.id.btn_main_play:
                 String playerName = textPlayerName.getText().toString();

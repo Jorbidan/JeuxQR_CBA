@@ -7,10 +7,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.qrcode.ImageManager.ImageFactory;
 import com.example.qrcode.ImageManager.ImageService;
@@ -27,10 +29,9 @@ public class addOrEditQRCodeActivity extends AppCompatActivity implements View.O
     Button btn_scan, btn_imageChoose, btn_save, btn_cancel;
     EditText editText_QRCodeId, editText_title, editText_description, editText_question, editText_answer, editText_hint;
     ImageView imageView_imageChosen;
-    Intent returnIntent;
-    QRCodeInfo qrCodeInfo;
-    Bitmap image;
-    Boolean isNew = true;
+    Intent returnIntent = new Intent();
+    private QRCodeInfo qrCodeInfo = new QRCodeInfo();
+    Boolean isNew;
     ImageService imageService;
     GameService gameService;
 
@@ -41,6 +42,8 @@ public class addOrEditQRCodeActivity extends AppCompatActivity implements View.O
         imageService = ImageFactory.getInstance();
         gameService = GameFactory.getInstance();
         initView();
+
+        isNew = true;
         if(getIntent().getExtras() != null){
             isNew = false;
         }
@@ -48,30 +51,41 @@ public class addOrEditQRCodeActivity extends AppCompatActivity implements View.O
         if(!isNew){
             setValues();
         }
+
     }
 
     private void setValues() {
         Bundle bundle = getIntent().getExtras();
-        if(bundle.get("QRCodeInfo") != null){
-            qrCodeInfo = (QRCodeInfo) bundle.get("QRCodeInfo");
-            editText_QRCodeId.setText(QRCodeInfo.getQRCode());
-            editText_title.setText(QRCodeInfo.getTitle());
-            editText_question.setText(QRCodeInfo.getQuestion());
-            editText_answer.setText(QRCodeInfo.getAnswer());
-            editText_description.setText(QRCodeInfo.getDescription());
-            editText_hint.setText(QRCodeInfo.getHint());
+        if(bundle.containsKey("QRCodeInfo") == true){
+            qrCodeInfo = (QRCodeInfo) getIntent().getSerializableExtra("QRCodeInfo");
+            editText_QRCodeId.setText(qrCodeInfo.getQrCode());
+            editText_title.setText(qrCodeInfo.getTitle());
+            editText_question.setText(qrCodeInfo.getQuestion());
+            editText_answer.setText(qrCodeInfo.getAnswer());
+            editText_description.setText(qrCodeInfo.getDescription());
+            editText_hint.setText(qrCodeInfo.getHint());
         }
 
-        if (qrCodeInfo.getImageRef() != null && bundle.get("Image") != null){
-            image = (Bitmap) bundle.get("Image");
-            imageView_imageChosen.setImageBitmap(image);
+        if (qrCodeInfo.getImageRef() != null ){
+            imageService.downloadImage(qrCodeInfo.getImageRef()).addOnCompleteListener(new OnCompleteListener<Bitmap>() {
+                @Override
+                public void onComplete(@NonNull Task<Bitmap> task) {
+                    Bitmap image;
+                    if (task.isSuccessful()) {
+                        image = task.getResult();
+                        imageView_imageChosen.setImageBitmap(image);
+
+                    }else{
+                        Log.d("addOrEditQRCodeActivity", "N'a pas pus receuillir l'image");
+                    }
+
+                }
+            });
         }
 
-        if(!isNew){
-            editText_QRCodeId.setEnabled(false);
-            btn_scan.setVisibility(View.GONE);
-            btn_scan.setEnabled(false);
-        }
+        editText_QRCodeId.setEnabled(false);
+        btn_scan.setVisibility(View.GONE);
+        btn_scan.setEnabled(false);
 
     }
 
@@ -155,7 +169,7 @@ public class addOrEditQRCodeActivity extends AppCompatActivity implements View.O
 
 
     private void prepareSave() {
-        qrCodeInfo.setQRCode(editText_QRCodeId.getText().toString());
+        qrCodeInfo.setQrCode(editText_QRCodeId.getText().toString());
         qrCodeInfo.setTitle(editText_title.getText().toString());
         qrCodeInfo.setDescription(editText_description.getText().toString());
         qrCodeInfo.setQuestion(editText_question.getText().toString());
@@ -163,11 +177,15 @@ public class addOrEditQRCodeActivity extends AppCompatActivity implements View.O
         qrCodeInfo.setHint(editText_hint.getText().toString());
 
         if(isNew){
-            gameService.getQueryQRCode().addOnCompleteListener(new OnCompleteListener() {
+            gameService.getQRCode(qrCodeInfo.getQrCode()).addOnCompleteListener(new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
                     if(task.isSuccessful()){
-
+                    Boolean exists = (Boolean) task.getResult();
+                    if(exists)
+                    Toast.makeText(getApplicationContext(), "L'id code QR est déjà utilisé par un autre code QR", Toast.LENGTH_LONG).show();
+                    else
+                        saveQRCode();
                     }
                 }
             });
@@ -177,7 +195,18 @@ public class addOrEditQRCodeActivity extends AppCompatActivity implements View.O
     }
 
     private void saveQRCode() {
-        //TODO AJOUTEROREDITQRCODE;
+
+        gameService.setQRCode(qrCodeInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+
+                    returnIntent.putExtra("QRCodeInfo", qrCodeInfo);
+                    returnIntent.putExtra("isNew", isNew);
+                    finish();
+                }
+            }
+        });
     }
 
 }
