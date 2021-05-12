@@ -1,13 +1,12 @@
 package com.example.qrcode.gameManager;
 
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.content.SharedPreferences;
 
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -17,34 +16,21 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 public class FirebaseGameService implements GameService {
     FirebaseFirestore gameDatabase;
     final String TAG = "GameService";
     public FirebaseGameService(){
         this.gameDatabase = FirebaseFirestore.getInstance();
-    }
-
-    @Override
-    public Task<String> getQRCodeReference(String qrCode) {
-        CollectionReference QRCodes = gameDatabase.collection("QRCodes");
-        Continuation<DocumentSnapshot, String> QRCodeReferenceContinuation = new Continuation<DocumentSnapshot, String>() {
-            @Override
-            public String then(@NonNull Task<DocumentSnapshot> task) throws Exception {
-                String qrCodeReturn = "";
-                if (task.isSuccessful()){
-                    qrCodeReturn = task.getResult().get("indice").toString();
-                }
-                return qrCodeReturn;
-            }
-        };
-        return QRCodes.document(qrCode).get().continueWith(QRCodeReferenceContinuation);
     }
 
     @Override
@@ -60,7 +46,7 @@ public class FirebaseGameService implements GameService {
                 else{
                     qrCodeMap = task.getResult();
                 }
-                Log.e(TAG,"getQRCodeFromGame : " +task.getResult().get("indice"));
+                Log.e(TAG,"getQRCodeFromGame : " + task.getResult().get("hint"));
                 return qrCodeMap;
             }
         };
@@ -99,6 +85,45 @@ public class FirebaseGameService implements GameService {
     }
 
     @Override
+    public Task<Void> setQRCodesToGame(String gameCode, List<QRCodeInfo> qrCodesInfo) {
+        Continuation<Void, Void> GetQRcodeContinuation = new Continuation<Void, Void>() {
+            @Override
+            public Void then(@NonNull Task<Void> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    FirebaseFirestoreException.Code errorCode = ((FirebaseFirestoreException) task.getException()).getCode();
+                    switch (errorCode) {
+                        case CANCELLED:
+                            throw new Exception("L'opération a été arrêtée ");
+                        case PERMISSION_DENIED:
+                            throw new Exception("Vous ne pouvez pas faire cette opération");
+                        case UNAVAILABLE:
+                            throw new Exception("Le service est indisponible");
+                        default:
+                            throw new Exception("Une erreur est survenue");
+                    }
+                }
+                return null;
+            }
+        };
+
+        for(int counter = 0;counter < qrCodesInfo.size();counter ++) {
+            Map<String, Object> qrCodeInfo = new HashMap<>();
+            qrCodeInfo.put("answer", qrCodesInfo.get(counter).getAnswer());
+            qrCodeInfo.put("description", qrCodesInfo.get(counter).getDescription());
+            qrCodeInfo.put("hint", qrCodesInfo.get(counter).getHint());
+            qrCodeInfo.put("imageRef", qrCodesInfo.get(counter).getImageRef());
+            qrCodeInfo.put("qrCode", qrCodesInfo.get(counter).getQrCode());
+            qrCodeInfo.put("question", qrCodesInfo.get(counter).getQuestion());
+            qrCodeInfo.put("title", qrCodesInfo.get(counter).getTitle());
+
+            CollectionReference QRCodesInGameRef = gameDatabase.collection("Games").document(gameCode).collection("QRCodes");
+
+            QRCodesInGameRef.document(String.valueOf(counter)).set(qrCodeInfo).continueWith(GetQRcodeContinuation);
+        }
+        return null;
+    }
+
+    @Override
     public Task<Boolean> checkGameExist(String gameCode) {
         Continuation<DocumentSnapshot, Boolean> resultContinuation = new Continuation<DocumentSnapshot, Boolean>() {
             @Override
@@ -123,7 +148,7 @@ public class FirebaseGameService implements GameService {
     @Override
     public Task<Void> joinGame(String gameCode, String playerName) {
        Map<String,Object> playerInGame = new HashMap<>();
-       playerInGame.put("currentQR",1);
+       playerInGame.put("currentQR",0);
        playerInGame.put("tempsFinal",0);
 
        CollectionReference Players = gameDatabase.collection("Games").document(gameCode).collection("Players");

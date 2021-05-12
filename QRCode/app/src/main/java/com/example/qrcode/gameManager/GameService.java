@@ -7,7 +7,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.List;
 
 public interface GameService {
-    Task<String> getQRCodeReference(String qrCode);
     Task<DocumentSnapshot> getQRCodeFromGame(String gameCode, String qrCodeID);
     Task<List<QRCodeInfo>> getQueryQRCode();
     Task<Boolean> getQRCode(String QRCodeID);
@@ -22,7 +21,7 @@ public interface GameService {
     Task<Void> deletePlayerInGame(String playerName, String gameCode);
     Subscription subscribeToGame(String gameCode, OnGameChange onGameChange);
     Task<Void> startGame(String gameCode);
-
+    Task<Void> setQRCodesToGame(String gameCode, List<QRCodeInfo> qrCodesInfo);
 
 
     public interface OnPlayerInGameChange{

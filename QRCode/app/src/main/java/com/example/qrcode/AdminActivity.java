@@ -19,8 +19,13 @@ import com.example.qrcode.authentication.AuthenticationFactory;
 import com.example.qrcode.authentication.AuthenticationService;
 import com.example.qrcode.gameManager.GameFactory;
 import com.example.qrcode.gameManager.GameService;
+import com.example.qrcode.gameManager.QRCodeInfo;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdminActivity extends AppCompatActivity {
     final String TAG = "AdminActivity";
@@ -28,6 +33,7 @@ public class AdminActivity extends AppCompatActivity {
     Button btnMenuPrincipale, btnCreateGame, btnManageQrCode, btnEndGame, btnStartGame;
     TextView textPartieEnCours;
     GameService gameService;
+    List<QRCodeInfo> qrCodeInfos = new ArrayList<>();
     AuthenticationService authenticationService;
     String gameCode = "";
     @Override
@@ -65,7 +71,7 @@ public class AdminActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<String> task) {
                         if (!task.isSuccessful()){
-                            Log.e("gameCREATED","error occured");
+                            Log.e("gameCREATED",task.getException().getMessage());
                         }
                         else{
                             gameCode = task.getResult();
@@ -73,6 +79,19 @@ public class AdminActivity extends AppCompatActivity {
                             btnCreateGame.setVisibility(View.INVISIBLE);
                             btnEndGame.setVisibility(View.VISIBLE);
                             btnStartGame.setVisibility(View.VISIBLE);
+                            gameService.getQueryQRCode().addOnCompleteListener(new OnCompleteListener<List<QRCodeInfo>>() {
+                                @Override
+                                public void onComplete(@NonNull Task<List<QRCodeInfo>> task) {
+                                    if (task.isSuccessful()){
+                                        qrCodeInfos.clear();
+                                        qrCodeInfos.addAll(task.getResult());
+                                        for(int i = 0;i<qrCodeInfos.size();i++){
+                                            Log.e(TAG,qrCodeInfos.get(i).getQrCode());
+                                        }
+                                    }
+                                    gameService.setQRCodesToGame(gameCode, qrCodeInfos);
+                                }
+                            });
                         }
                     }
                 });
@@ -137,7 +156,16 @@ public class AdminActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        goToMainActivity();
+    }
+
     private void goToMainActivity() {
+        if (!gameCode.equals("")) {
+            gameService.endGame(gameCode);
+            Toast.makeText(this, "Votre partie c'est terminé puisque vous êtes retourné au menu principal.", Toast.LENGTH_SHORT).show();
+        }
         Intent goToMainActivityIntent = new Intent(this,MainActivity.class);
         startActivity(goToMainActivityIntent);
         finish();

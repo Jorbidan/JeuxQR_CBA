@@ -63,10 +63,10 @@ public class GameActivity extends AppCompatActivity {
                     gameCode = task.getResult();
                     txtCurrentGame.setText("Code de partie : " + gameCode);
                     subscribeToGame(gameCode);
-                    gameService.getQRCodeFromGame(gameCode,"1").addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    gameService.getQRCodeFromGame(gameCode,"0").addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            txtIndice.setText(task.getResult().get("indice").toString());
+                            txtIndice.setText(task.getResult().get("hint").toString());
                         }
                     });
                 }
