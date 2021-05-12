@@ -33,25 +33,25 @@ public class FirebaseGameService implements GameService {
         this.gameDatabase = FirebaseFirestore.getInstance();
     }
 
-    @Override
-    public Task<DocumentSnapshot> getQRCodeFromGame(String gameCode, String qrCodeID) {
-        CollectionReference QRCodes = gameDatabase.collection("Games").document(gameCode).collection("QRCodes");
-        Continuation<DocumentSnapshot,DocumentSnapshot> QRCodeFromGameContinuation = new Continuation<DocumentSnapshot, DocumentSnapshot>() {
-            @Override
-            public DocumentSnapshot then(@NonNull Task<DocumentSnapshot> task) throws Exception {
-                DocumentSnapshot qrCodeMap = null;
-                if (!task.isSuccessful()){
-                    Log.e(TAG,"getQRCodeFromGame : " + task.getException().getMessage());
-                }
-                else{
-                    qrCodeMap = task.getResult();
-                }
-                Log.e(TAG,"getQRCodeFromGame : " + task.getResult().get("hint"));
-                return qrCodeMap;
-            }
-        };
-        return QRCodes.document(qrCodeID).get().continueWith(QRCodeFromGameContinuation);
-    }
+   // @Override
+   // public Task<DocumentSnapshot> getQRCodeFromGame(String gameCode, String qrCodeID) {
+   //     CollectionReference QRCodes = gameDatabase.collection("Games").document(gameCode).collection("QRCodes");
+   //     Continuation<DocumentSnapshot,DocumentSnapshot> QRCodeFromGameContinuation = new Continuation<DocumentSnapshot, DocumentSnapshot>() {
+   //         @Override
+   //         public DocumentSnapshot then(@NonNull Task<DocumentSnapshot> task) throws Exception {
+   //             DocumentSnapshot qrCodeMap = null;
+   //             if (!task.isSuccessful()){
+   //                 Log.e(TAG,"getQRCodeFromGame : " + task.getException().getMessage());
+   //             }
+   //             else{
+   //                 qrCodeMap = task.getResult();
+   //             }
+   //             Log.e(TAG,"getQRCodeFromGame : " + task.getResult().get("hint"));
+   //             return qrCodeMap;
+   //         }
+   //     };
+   //     return QRCodes.document(qrCodeID).get().continueWith(QRCodeFromGameContinuation);
+   // }
 
 
     @Override
@@ -326,7 +326,22 @@ public class FirebaseGameService implements GameService {
     }
 
     @Override
-    public Task<Boolean> getQRCode(String QRCodeID) {
+    public Task<List<QRCodeInfo>> getQueryQRCodeFromGame(String gameCode){
+        CollectionReference QRCodesFromGame = gameDatabase.collection("Games").document(gameCode).collection("QRCodes");
+        Continuation<QuerySnapshot,List<QRCodeInfo>> getQRCodesFromGameContinuation = new Continuation<QuerySnapshot, List<QRCodeInfo>>() {
+            @Override
+            public List<QRCodeInfo> then(@NonNull Task<QuerySnapshot> task) throws Exception {
+                if(!task.isSuccessful()){
+                   Log.e(TAG,"getQueryQRCodeFromGame : " + task.getException().getMessage());
+                }
+                return task.getResult().toObjects(QRCodeInfo.class);
+            }
+        };
+        return QRCodesFromGame.get().continueWith(getQRCodesFromGameContinuation);
+    }
+
+    @Override
+    public Task<Boolean> CheckQRCodeExist(String QRCodeID) {
         CollectionReference QRCodes = gameDatabase.collection("QRCodes");
         Continuation<DocumentSnapshot,Boolean> getQRCodeContinuation = new Continuation<DocumentSnapshot,Boolean>() {
             @Override

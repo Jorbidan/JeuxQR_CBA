@@ -177,7 +177,7 @@ public class addOrEditQRCodeActivity extends AppCompatActivity implements View.O
         qrCodeInfo.setHint(editText_hint.getText().toString());
 
         if(isNew){
-            gameService.getQRCode(qrCodeInfo.getQrCode()).addOnCompleteListener(new OnCompleteListener() {
+            gameService.CheckQRCodeExist(qrCodeInfo.getQrCode()).addOnCompleteListener(new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
                     if(task.isSuccessful()){

@@ -1,40 +1,60 @@
 package com.example.qrcode;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.qrcode.gameManager.GameFactory;
 import com.example.qrcode.gameManager.GameService;
+import com.example.qrcode.gameManager.QRCodeInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
     Button btnScan;
-    TextView txtIndice, txtInfo,txtDisplayName, txtCurrentGame;
+    TextView txtIndice, txtInfo,txtDisplayName, txtCurrentGame, txtTime, txtQuestion,txtAnswer;
+    ImageView imageView;
     GameService gameService;
     String displayName,gameCode;
     GameService.Subscription subscriptionToGame = null;
-
+    final static int TAG_SCAN = 3;
+    QRCodeInfo currentCodeScanned;
+    Integer currentlyLookingFor, timeSecondes;
+    Boolean finished = false;
+    List<QRCodeInfo> qrCodeInfos = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         gameService = GameFactory.getInstance();
         btnScan = findViewById(R.id.btn_game_scan);
+        txtQuestion = findViewById(R.id.textView_game_question);
+        txtAnswer = findViewById(R.id.editText_game_answer);
+        imageView = findViewById(R.id.imageView_game_image);
+        txtTime = findViewById(R.id.textView_game_time);
         txtIndice = findViewById(R.id.textView_game_indice);
         txtCurrentGame = findViewById(R.id.textView_game_gameCode);
         txtDisplayName = findViewById(R.id.textView_game_displayName);
-        txtInfo = findViewById(R.id.textView_game_info);
+        txtInfo = findViewById(R.id.textView_game_description);
+        currentCodeScanned = new QRCodeInfo();
+        currentlyLookingFor = 0;
+        timeSecondes = 0;
         setData();
         setListeners();
     }
@@ -45,6 +65,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void setData() {
+        txtAnswer.setVisibility(View.INVISIBLE);
+        txtQuestion.setVisibility(View.INVISIBLE);
+        imageView.setVisibility(View.INVISIBLE);
         try {
             SharedPreferences sharedPreferences;
             sharedPreferences = getSharedPreferences("playerName",MODE_PRIVATE);
@@ -63,15 +86,25 @@ public class GameActivity extends AppCompatActivity {
                     gameCode = task.getResult();
                     txtCurrentGame.setText("Code de partie : " + gameCode);
                     subscribeToGame(gameCode);
-                    gameService.getQRCodeFromGame(gameCode,"0").addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    gameService.getQueryQRCodeFromGame(gameCode).addOnCompleteListener(new OnCompleteListener<List<QRCodeInfo>>() {
                         @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            txtIndice.setText(task.getResult().get("hint").toString());
+                        public void onComplete(@NonNull Task<List<QRCodeInfo>> task) {
+                            if (task.isSuccessful()){
+                                qrCodeInfos.clear();
+                                qrCodeInfos.addAll(task.getResult());
+                                setQRCodeInformation();
+                            }
                         }
                     });
+
                 }
             }
         });
+        startTimer();
+    }
+
+    private void setQRCodeInformation() {
+        txtIndice.setText(qrCodeInfos.get(currentlyLookingFor).getHint());
     }
 
     private void subscribeToGame(String gameCode) {
@@ -112,9 +145,64 @@ public class GameActivity extends AppCompatActivity {
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // start scan
+                Intent intentScanBarCode =  new Intent(GameActivity.this, ScannedBarcodeActivity.class);
+                startActivityForResult(intentScanBarCode, TAG_SCAN);
             }
         });
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bundle bundle;
+        switch(requestCode) {
+            case TAG_SCAN:
+                bundle = data.getExtras();
+                if (bundle.containsKey("QRCodeID") && bundle.get("QRCodeID") != "") {
+                    if (qrCodeInfos.get(currentlyLookingFor).getQrCode().equals(bundle.get("QRCodeID"))){
+                        Toast.makeText(GameActivity.this,"Bravo vous avez trouvé le bon code QR!",Toast.LENGTH_SHORT).show();
+                        CheckQuestion();
+                    }
+                    else{
+                        Toast.makeText(GameActivity.this,"Ce n'est pas le bon code QR...",Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+        }
+    }
+
+    private void CheckQuestion() {
+        currentCodeScanned = qrCodeInfos.get(currentlyLookingFor);
+        if (!currentCodeScanned.getQuestion().equals("")){
+            txtAnswer.setVisibility(View.VISIBLE);
+            txtQuestion.setVisibility(View.VISIBLE);
+            txtQuestion.setText(currentCodeScanned.getQuestion());
+            if (!currentCodeScanned.getImageRef().isEmpty()){
+                imageView.setVisibility(View.VISIBLE);
+                //set image
+            }
+            if (true){
+                Toast.makeText(GameActivity.this,"Bonne réponse!",Toast.LENGTH_SHORT).show();
+                nextQRCode();
+            }
+        }
+        else{
+            nextQRCode();
+        }
+
+    }
+
+    private void nextQRCode() {
+        currentlyLookingFor ++;
+        if (currentlyLookingFor < qrCodeInfos.size()){
+            setQRCodeInformation();
+        }
+        else{
+            Toast.makeText(GameActivity.this,"BRAVO! Votre temps est de " + timeSecondes + " secondes!",Toast.LENGTH_SHORT).show();
+            txtIndice.setText("Votre temps final est de "+timeSecondes+" secondes! Retourner au point de départ pour savoir votre position!");
+            txtIndice.setTextSize(28);
+            btnScan.setVisibility(View.INVISIBLE);
+            finished = true;
+        }
     }
 
     private void alertgameStop(String message) {
@@ -129,5 +217,17 @@ public class GameActivity extends AppCompatActivity {
                     }
                 }).show();
     }
-
+    private void startTimer(){
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!finished){
+                    timeSecondes ++;
+                    txtTime.setText(timeSecondes.toString());
+                }
+                handler.postDelayed(this,1000);
+            }
+        },1000);
+    }
 }
