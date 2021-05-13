@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -47,13 +48,14 @@ public class ImageRecyclerAdapter  extends RecyclerView.Adapter<ImageRecyclerAda
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         int position;
         TextView textViewImageName;
-        Button btn_chooseImage, btn_deleteImage;
+        Button btn_chooseImage;
+        ImageView imageView_deleteImage;
         ImageAdapterInterface imageAdapterInterface;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewImageName = itemView.findViewById(R.id.textView_cardImageChoose_imageName);
             btn_chooseImage = itemView.findViewById(R.id.btn_cardImageChoose_chooseImage);
-            btn_deleteImage = itemView.findViewById(R.id.btn_cardImageChoose_deleteImage);
+            imageView_deleteImage = itemView.findViewById(R.id.imageView_cardImageChoose_deleteImage);
             btn_chooseImage.setOnClickListener(new View.OnClickListener(){
 
                 @Override
@@ -61,7 +63,7 @@ public class ImageRecyclerAdapter  extends RecyclerView.Adapter<ImageRecyclerAda
                    imageAdapterInterface.imageChosen(position);
                 }
             });
-            btn_deleteImage.setOnClickListener(new View.OnClickListener(){
+            imageView_deleteImage.setOnClickListener(new View.OnClickListener(){
 
                 @Override
                 public void onClick(View v) {imageAdapterInterface.imageDelete(position);}

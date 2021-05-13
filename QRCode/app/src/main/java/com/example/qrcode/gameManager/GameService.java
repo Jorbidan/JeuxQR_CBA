@@ -9,6 +9,8 @@ import java.util.List;
 public interface GameService {
     //Task<QRCodeInfo> getQRCodeReference(String qrCode);
     //Task<DocumentSnapshot> getQRCodeFromGame(String gameCode, String qrCodeID);
+    Task<List<Resultats>> getAllplayersTime(String gameCode);
+    Task<Void> setFinalTime(String gameCode,String playerName, Integer time);
     Task<List<QRCodeInfo>> getQueryQRCode();
     Task<List<QRCodeInfo>> getQueryQRCodeFromGame(String gameCode);
     Task<Boolean> CheckQRCodeExist(String QRCodeID);

@@ -36,9 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Context context;
     Bitmap bmp;
     private final int TAG_SCAN = 3;
-    private final int PICK_IMAGE = 4;
-    Button btnScanBarcode, btnGallery;
-    Button buttonAdmin, btnAddImage;
+    private final int PICK_IMAGE = 4;;
+    Button buttonAdmin;
     TextView textGameCode;
     TextView textPlayerName;
     Button btnPlay;
@@ -90,20 +89,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textGameCode = findViewById(R.id.text_main_GameCode);
         textPlayerName = findViewById(R.id.text_main_playerName);
 
-        btnGallery = findViewById(R.id.btn_main_openGallery);
-        btnGallery.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
-            case R.id.btn_main_openGallery:
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
-                break;
             case R.id.btn_main_adminLogin:
                 Intent intentLoginAdmin = new Intent(MainActivity.this,AdminLoginActivity.class);
                 startActivity(intentLoginAdmin);

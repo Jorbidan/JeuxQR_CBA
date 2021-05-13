@@ -78,22 +78,13 @@
             android:id="@+id/text_main_playerName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="120dp"
             android:ems="10"
             android:inputType="textPersonName"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_main_title" />
-
-        <Button
-            android:id="@+id/btn_main_openGallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="Open Gallery"
-            app:layout_constraintBottom_toTopOf="@+id/btn_main_adminLogin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/text_main_title"
+            app:layout_constraintVertical_bias="0.23000002" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

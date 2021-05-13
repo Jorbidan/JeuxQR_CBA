@@ -5,18 +5,24 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.qrcode.ImageManager.ImageFactory;
+import com.example.qrcode.ImageManager.ImageService;
 import com.example.qrcode.gameManager.GameFactory;
 import com.example.qrcode.gameManager.GameService;
 import com.example.qrcode.gameManager.QRCodeInfo;
@@ -27,10 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
-    Button btnScan;
+    Button btnScan, btnAnswer;
     TextView txtIndice, txtInfo,txtDisplayName, txtCurrentGame, txtTime, txtQuestion,txtAnswer;
     ImageView imageView;
     GameService gameService;
+    ImageService imageService;
     String displayName,gameCode;
     GameService.Subscription subscriptionToGame = null;
     final static int TAG_SCAN = 3;
@@ -43,7 +50,9 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         gameService = GameFactory.getInstance();
+        imageService = ImageFactory.getInstance();
         btnScan = findViewById(R.id.btn_game_scan);
+        btnAnswer = findViewById(R.id.button_game_answer);
         txtQuestion = findViewById(R.id.textView_game_question);
         txtAnswer = findViewById(R.id.editText_game_answer);
         imageView = findViewById(R.id.imageView_game_image);
@@ -65,9 +74,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void setData() {
-        txtAnswer.setVisibility(View.INVISIBLE);
-        txtQuestion.setVisibility(View.INVISIBLE);
-        imageView.setVisibility(View.INVISIBLE);
         try {
             SharedPreferences sharedPreferences;
             sharedPreferences = getSharedPreferences("playerName",MODE_PRIVATE);
@@ -104,9 +110,21 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void setQRCodeInformation() {
+        txtInfo.setVisibility(View.INVISIBLE);
+        txtInfo.setText(currentCodeScanned.getDescription());
+        txtAnswer.setVisibility(View.INVISIBLE);
+        txtQuestion.setVisibility(View.INVISIBLE);
+        imageView.setVisibility(View.INVISIBLE);
+        btnAnswer.setVisibility(View.INVISIBLE);
         txtIndice.setText(qrCodeInfos.get(currentlyLookingFor).getHint());
     }
-
+    public static void hideKeyboard(Activity activity) {
+        View view = activity.findViewById(android.R.id.content);
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
     private void subscribeToGame(String gameCode) {
         subscriptionToGame = gameService.subscribeToGame(gameCode, new GameService.OnGameChange() {
             @Override
@@ -124,7 +142,7 @@ public class GameActivity extends AppCompatActivity {
     private void alertQuittingGame() {
         new AlertDialog.Builder(GameActivity.this)
                 .setTitle("Déconnexion")
-                .setMessage("Ëtes-vous certain de vouloir quitter la partie?")
+                .setMessage("Êtes-vous certain de vouloir quitter la partie?")
                 .setPositiveButton("OK !", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dialog.dismiss();
@@ -147,6 +165,12 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intentScanBarCode =  new Intent(GameActivity.this, ScannedBarcodeActivity.class);
                 startActivityForResult(intentScanBarCode, TAG_SCAN);
+            }
+        });
+        btnAnswer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkAnswer();
             }
         });
     }
@@ -174,15 +198,20 @@ public class GameActivity extends AppCompatActivity {
         currentCodeScanned = qrCodeInfos.get(currentlyLookingFor);
         if (!currentCodeScanned.getQuestion().equals("")){
             txtAnswer.setVisibility(View.VISIBLE);
+            btnAnswer.setVisibility(View.VISIBLE);
             txtQuestion.setVisibility(View.VISIBLE);
             txtQuestion.setText(currentCodeScanned.getQuestion());
-            if (!currentCodeScanned.getImageRef().isEmpty()){
+            if (!currentCodeScanned.getImageRef().equals("")){
                 imageView.setVisibility(View.VISIBLE);
-                //set image
-            }
-            if (true){
-                Toast.makeText(GameActivity.this,"Bonne réponse!",Toast.LENGTH_SHORT).show();
-                nextQRCode();
+                imageService.downloadImage(currentCodeScanned.getImageRef()).addOnCompleteListener(new OnCompleteListener<Bitmap>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Bitmap> task) {
+                     if(task.isSuccessful()){
+                         Bitmap bm = task.getResult();
+                         imageView.setImageBitmap(bm);
+                     }
+                    }
+                });
             }
         }
         else{
@@ -191,7 +220,17 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
+    private void checkAnswer() {
+        if (txtAnswer.getText().toString().equals(currentCodeScanned.getAnswer())){
+            Toast.makeText(GameActivity.this,"Bonne réponse!",Toast.LENGTH_SHORT).show();
+            nextQRCode();
+        } else{
+            Toast.makeText(GameActivity.this,"Mauvaise réponse...",Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void nextQRCode() {
+        hideKeyboard(GameActivity.this);
         currentlyLookingFor ++;
         if (currentlyLookingFor < qrCodeInfos.size()){
             setQRCodeInformation();
@@ -202,6 +241,14 @@ public class GameActivity extends AppCompatActivity {
             txtIndice.setTextSize(28);
             btnScan.setVisibility(View.INVISIBLE);
             finished = true;
+            gameService.setFinalTime(gameCode,displayName,timeSecondes).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (!task.isSuccessful()){
+                        Log.e("TAG","SETFINALTIME clientside : " + task.getException().getMessage());
+                    }
+                }
+            });
         }
     }
 

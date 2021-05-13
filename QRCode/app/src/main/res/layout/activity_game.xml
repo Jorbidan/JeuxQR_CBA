@@ -10,42 +10,43 @@
         android:id="@+id/btn_game_scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginTop="16dp"
         android:text="@string/scan"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_game_answer"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView_game_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/btn_game_scan"
+        android:layout_width="238dp"
+        android:layout_height="84dp"
+        android:layout_marginTop="16dp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_game_indice"
-        app:layout_constraintVertical_bias="0.079" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_game_indice" />
 
     <TextView
         android:id="@+id/textView_game_indice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
+        android:layout_width="236dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="24dp"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_game_time" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Votre indice"
+        android:text="Indice"
         app:layout_constraintBottom_toTopOf="@+id/textView_game_indice"
-        app:layout_constraintEnd_toStartOf="@+id/textView_game_indice" />
+        app:layout_constraintStart_toStartOf="@+id/textView_game_indice" />
 
     <TextView
         android:id="@+id/textView_game_displayName"
@@ -67,9 +68,9 @@
 
     <TextView
         android:id="@+id/textView_game_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
+        android:layout_width="69dp"
+        android:layout_height="21dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -80,39 +81,60 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="Temps :"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
         app:layout_constraintEnd_toStartOf="@+id/textView_game_time"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/textView_game_time" />
 
     <TextView
         android:id="@+id/textView_game_question"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/btn_game_scan"
+        android:layout_width="236dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="32dp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_game_description"
-        app:layout_constraintVertical_bias="0.235" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView_game_image" />
 
     <EditText
         android:id="@+id/editText_game_answer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_width="236dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="Votre réponse"
         android:inputType="textPersonName"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_game_question" />
 
     <ImageView
         android:id="@+id/imageView_game_image"
+        android:layout_width="238dp"
+        android:layout_height="150dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="218dp" />
+
+    <Button
+        android:id="@+id/button_game_answer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:text="Répondre"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_game_answer" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Question:"
+        app:layout_constraintBottom_toTopOf="@+id/textView_game_question"
+        app:layout_constraintStart_toStartOf="@+id/textView_game_question" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

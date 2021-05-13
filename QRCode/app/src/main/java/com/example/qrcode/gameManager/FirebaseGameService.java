@@ -147,9 +147,9 @@ public class FirebaseGameService implements GameService {
 
     @Override
     public Task<Void> joinGame(String gameCode, String playerName) {
-       Map<String,Object> playerInGame = new HashMap<>();
-       playerInGame.put("currentQR",0);
-       playerInGame.put("tempsFinal",0);
+       Resultats resultatJoueur = new Resultats();
+       resultatJoueur.setPlayerName(playerName);
+       resultatJoueur.setPlayerTime(0);
 
        CollectionReference Players = gameDatabase.collection("Games").document(gameCode).collection("Players");
        Continuation<Void,Void> PlayerJoinGameContinuation = new Continuation<Void, Void>() {
@@ -175,7 +175,7 @@ public class FirebaseGameService implements GameService {
         Map<String,Object> currentGame = new HashMap<>();
         currentGame.put("Game",gameCode);
         gameDatabase.collection("Players").document(playerName).set(currentGame);
-       return Players.document(playerName).set(playerInGame);
+       return Players.document(playerName).set(resultatJoueur);
     }
 
     @Override
@@ -314,6 +314,7 @@ public class FirebaseGameService implements GameService {
              public List<QRCodeInfo> then(@NonNull Task<QuerySnapshot> task) throws Exception {
                  if(!task.isSuccessful()){
                      Log.e(TAG,"getQueryQRCode : "+ task.getException().getMessage());
+                     return null;
                  }else{
                      for(int i = 0;i < task.getResult().getDocuments().size();i++){
                          Log.e(TAG,"GetQueryQRCode : document : "+task.getResult().getDocuments().get(i).getId());
@@ -388,6 +389,38 @@ public class FirebaseGameService implements GameService {
             }
         };
         return QRCodes.document(QRCodeID).delete().continueWith(getQRCodeContinuation);
+    }
+
+    @Override
+    public Task<Void> setFinalTime(String gameCode, String playerName, Integer time) {
+        DocumentReference PlayerReference = gameDatabase.collection("Games").document(gameCode).collection("Players").document(playerName);
+        Continuation<Void,Void> SetTimePlayerContinuation = new Continuation<Void, Void>() {
+            @Override
+            public Void then(@NonNull Task<Void> task) throws Exception {
+                if (!task.isSuccessful()){
+                    Log.e(TAG,"SETFINALTIME : " + task.getException().getMessage());
+                }
+                return null;
+            }
+        };
+        return PlayerReference.update("tempsFinal",time).continueWith(SetTimePlayerContinuation);
+    }
+
+    @Override
+    public Task<List<Resultats>> getAllplayersTime(String gameCode) {
+        CollectionReference PlayersInGameReference = gameDatabase.collection("Games").document(gameCode).collection("Players");
+        Continuation<QuerySnapshot,List<Resultats>> getAllPlayersContinuation = new Continuation<QuerySnapshot, List<Resultats>>() {
+            @Override
+            public List<Resultats> then(@NonNull Task<QuerySnapshot> task) throws Exception {
+                if (!task.isSuccessful()){
+                    Log.e(TAG,"GETALLPLAYERSTIME : " +task.getException().getMessage());
+                    return null;
+                }
+                  return task.getResult().toObjects(Resultats.class);
+            }
+        };
+
+        return PlayersInGameReference.orderBy("playerTime").get().continueWith(getAllPlayersContinuation);
     }
 
     private String generateGameCode() {

@@ -19,6 +19,9 @@ public class QRCodeInfo implements Serializable {
     }
 
     public String getImageRef() {
+        if (imageRef == null){
+            imageRef = "";
+        }
         return imageRef;
     }
 

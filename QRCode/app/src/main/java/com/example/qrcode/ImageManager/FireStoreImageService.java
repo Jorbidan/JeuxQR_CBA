@@ -31,9 +31,9 @@ public class FireStoreImageService implements ImageService {
     public Task<StorageReference> uploadImage(Bitmap imageBitmap, String imageName) {
         StorageReference storageRef = firebaseStorage.getReference();
         StorageReference imageRef = storageRef.child("images/"+imageName);
-
+        Bitmap uploadedBitmap = scaleBitmap(imageBitmap);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        uploadedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
 
         Continuation<UploadTask.TaskSnapshot, StorageReference> uploadTaskContinuation = new Continuation<UploadTask.TaskSnapshot, StorageReference>() {
@@ -92,6 +92,15 @@ public class FireStoreImageService implements ImageService {
         return imageReference.delete();
     }
 
+    private Bitmap scaleBitmap(Bitmap mBitmap) {
+        int ScaleSize = 1024;//max Height or width to Scale
+        int width = mBitmap.getWidth();
+        int height = mBitmap.getHeight();
+        float excessSizeRatio = width > height ? width / ScaleSize : height / ScaleSize;
+        Bitmap bitmap = Bitmap.createBitmap(
+                mBitmap, 0, 0,(int) (width/excessSizeRatio),(int) (height/excessSizeRatio));
+        return bitmap;
+    }
 
     //DownloadFile https://firebase.google.com/docs/storage/android/download-files
 }

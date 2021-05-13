@@ -3,12 +3,13 @@ package com.example.qrcode;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,9 +21,12 @@ import com.example.qrcode.authentication.AuthenticationService;
 import com.example.qrcode.gameManager.GameFactory;
 import com.example.qrcode.gameManager.GameService;
 import com.example.qrcode.gameManager.QRCodeInfo;
+import com.example.qrcode.gameManager.Resultats;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +69,6 @@ public class AdminActivity extends AppCompatActivity {
                 gameService.createGame(new GameService.OnGameCreate() {
                     @Override
                     public void OnCreateGame() {
-                        StartTimer();
                     }
                 }).addOnCompleteListener(new OnCompleteListener<String>() {
                     @Override
@@ -113,12 +116,42 @@ public class AdminActivity extends AppCompatActivity {
                         .setPositiveButton("Oui !", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 dialog.dismiss();
-                                gameService.endGame(gameCode);
                                 textPartieEnCours.setText("Aucune partie en cours");
                                 btnCreateGame.setVisibility(View.VISIBLE);
                                 btnEndGame.setVisibility(View.INVISIBLE);
                                 btnStartGame.setVisibility(View.INVISIBLE);
-                                Toast.makeText(AdminActivity.this,"La partie est terminer.",Toast.LENGTH_SHORT).show();
+                                gameService.getAllplayersTime(gameCode).addOnCompleteListener(new OnCompleteListener<List<Resultats>>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<List<Resultats>> task) {
+                                        if(task.isSuccessful()) {
+                                            List<Resultats> resultats = task.getResult();
+                                            Log.e(TAG,"WENT IN");
+                                            Dialog resultatsDialog = new Dialog(AdminActivity.this);
+                                            resultatsDialog.setContentView(R.layout.dialog_resultat);
+                                            Button btnQuit;
+                                            btnQuit = resultatsDialog.findViewById(R.id.button_dialogResultat_quit);
+                                            RecyclerView recyclerView;
+                                            RecyclerView.Adapter adapter;
+                                            RecyclerView.LayoutManager layoutManager;
+                                            recyclerView = resultatsDialog.findViewById(R.id.recyclerView_resultat);
+                                            recyclerView.setHasFixedSize(false);
+                                            layoutManager = new LinearLayoutManager(AdminActivity.this);
+                                            recyclerView.setLayoutManager(layoutManager);
+                                            adapter = new ResultatRecyclerAdapter(resultats);
+                                            recyclerView.setAdapter(adapter);
+                                            btnQuit.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    dialog.dismiss();
+                                                    goToMainActivity();
+                                                }
+                                            });
+                                            resultatsDialog.show();
+                                        }else{
+                                            Log.e(TAG,task.getException().getMessage());
+                                        }
+                                    }
+                                });
                             }}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -142,19 +175,10 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void StartTimer() {
-        new CountDownTimer(30000, 1000) {
-            public void onTick(long millisUntilFinished) {
-               //on each seconds
-            }
-
-            public void onFinish() {
-                //timer end
-            }
-        }.start();
+    private void ShowResults() {
 
     }
+
 
     @Override
     public void onBackPressed() {
