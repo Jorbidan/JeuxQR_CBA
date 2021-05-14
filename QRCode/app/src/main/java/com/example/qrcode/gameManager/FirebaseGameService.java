@@ -403,7 +403,7 @@ public class FirebaseGameService implements GameService {
                 return null;
             }
         };
-        return PlayerReference.update("tempsFinal",time).continueWith(SetTimePlayerContinuation);
+        return PlayerReference.update("playerTime",time).continueWith(SetTimePlayerContinuation);
     }
 
     @Override

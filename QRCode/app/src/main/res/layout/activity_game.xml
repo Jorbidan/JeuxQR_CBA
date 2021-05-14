@@ -111,11 +111,12 @@
         android:id="@+id/imageView_game_image"
         android:layout_width="238dp"
         android:layout_height="150dp"
+        android:layout_marginTop="16dp"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="218dp" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_game_description" />
 
     <Button
         android:id="@+id/button_game_answer"
