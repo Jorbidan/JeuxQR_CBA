@@ -96,14 +96,15 @@
 
     <EditText
         android:id="@+id/editText_game_answer"
-        android:layout_width="236dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="244dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="28dp"
         android:ems="10"
-        android:hint="Votre réponse"
         android:inputType="textPersonName"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.094"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_game_question" />
 
@@ -122,13 +123,13 @@
         android:id="@+id/button_game_answer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="8dp"
         android:text="Répondre"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_game_answer" />
+        app:layout_constraintStart_toEndOf="@+id/editText_game_answer"
+        app:layout_constraintTop_toBottomOf="@+id/textView_game_question" />
 
     <TextView
         android:id="@+id/textView6"
@@ -137,5 +138,13 @@
         android:text="Question:"
         app:layout_constraintBottom_toTopOf="@+id/textView_game_question"
         app:layout_constraintStart_toStartOf="@+id/textView_game_question" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Réponse:"
+        app:layout_constraintBottom_toTopOf="@+id/editText_game_answer"
+        app:layout_constraintStart_toStartOf="@+id/editText_game_answer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
