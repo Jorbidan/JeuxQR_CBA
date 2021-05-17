@@ -34,14 +34,14 @@
         android:id="@+id/textView_game_indice"
         android:layout_width="236dp"
         android:layout_height="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="75dp"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_game_time" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/lbl_indice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Indice"
@@ -68,7 +68,7 @@
 
     <TextView
         android:id="@+id/textView_game_time"
-        android:layout_width="69dp"
+        android:layout_width="91dp"
         android:layout_height="21dp"
         android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -132,7 +132,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView_game_question" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/lbl_question"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Question:"
@@ -140,7 +140,7 @@
         app:layout_constraintStart_toStartOf="@+id/textView_game_question" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/lbl_repoonse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Réponse:"

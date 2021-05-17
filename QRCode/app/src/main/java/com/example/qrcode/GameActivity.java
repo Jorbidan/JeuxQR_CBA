@@ -34,7 +34,7 @@ import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
     Button btnScan, btnAnswer;
-    TextView txtIndice, txtInfo,txtDisplayName, txtCurrentGame, txtTime, txtQuestion,txtAnswer;
+    TextView txtIndice, txtInfo,txtDisplayName, txtCurrentGame, txtTime, txtQuestion,txtAnswer,lblQuestion,lblReponse,lblindice;
     ImageView imageView;
     GameService gameService;
     ImageService imageService;
@@ -60,6 +60,9 @@ public class GameActivity extends AppCompatActivity {
         txtIndice = findViewById(R.id.textView_game_indice);
         txtCurrentGame = findViewById(R.id.textView_game_gameCode);
         txtDisplayName = findViewById(R.id.textView_game_displayName);
+        lblindice = findViewById(R.id.lbl_indice);
+        lblQuestion = findViewById(R.id.lbl_question);
+        lblReponse = findViewById(R.id.lbl_repoonse);
         txtInfo = findViewById(R.id.textView_game_description);
         currentCodeScanned = new QRCodeInfo();
         currentlyLookingFor = 0;
@@ -116,6 +119,8 @@ public class GameActivity extends AppCompatActivity {
         txtQuestion.setVisibility(View.INVISIBLE);
         imageView.setVisibility(View.INVISIBLE);
         btnAnswer.setVisibility(View.INVISIBLE);
+        lblReponse.setVisibility(View.INVISIBLE);
+        lblQuestion.setVisibility(View.INVISIBLE);
         txtIndice.setText(qrCodeInfos.get(currentlyLookingFor).getHint());
     }
     public static void hideKeyboard(Activity activity) {
@@ -197,9 +202,12 @@ public class GameActivity extends AppCompatActivity {
     private void CheckQuestion() {
         currentCodeScanned = qrCodeInfos.get(currentlyLookingFor);
         if (!currentCodeScanned.getQuestion().equals("")){
+            txtInfo.setVisibility(View.INVISIBLE);
             txtAnswer.setVisibility(View.VISIBLE);
             btnAnswer.setVisibility(View.VISIBLE);
             txtQuestion.setVisibility(View.VISIBLE);
+            lblReponse.setVisibility(View.VISIBLE);
+            lblQuestion.setVisibility(View.VISIBLE);
             txtQuestion.setText(currentCodeScanned.getQuestion());
             if (!currentCodeScanned.getImageRef().equals("")){
                 imageView.setVisibility(View.VISIBLE);
@@ -237,8 +245,17 @@ public class GameActivity extends AppCompatActivity {
         }
         else{
             Toast.makeText(GameActivity.this,"BRAVO! Votre temps est de " + timeSecondes + " secondes!",Toast.LENGTH_SHORT).show();
-            txtIndice.setText("Votre temps final est de "+timeSecondes+" secondes! Retourner au point de départ pour savoir votre position!");
-            txtIndice.setTextSize(28);
+            txtAnswer.setVisibility(View.INVISIBLE);
+            txtQuestion.setVisibility(View.INVISIBLE);
+            imageView.setVisibility(View.INVISIBLE);
+            btnAnswer.setVisibility(View.INVISIBLE);
+            lblReponse.setVisibility(View.INVISIBLE);
+            lblQuestion.setVisibility(View.INVISIBLE);
+            lblindice.setVisibility(View.INVISIBLE);
+            txtIndice.setVisibility(View.INVISIBLE);
+            txtInfo.setVisibility(View.VISIBLE);
+            txtInfo.setText("Votre temps final est de "+timeSecondes+" secondes! Retourner au point de départ pour savoir votre position!");
+            txtInfo.setTextSize(24);
             btnScan.setVisibility(View.INVISIBLE);
             finished = true;
             gameService.setFinalTime(gameCode,displayName,timeSecondes).addOnCompleteListener(new OnCompleteListener<Void>() {
