@@ -11,19 +11,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QRCode">
-        <activity android:name=".GameActivity"></activity>
-        <activity android:name=".QRCodeActivity" />
+        <activity android:name=".GameActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".QRCodeActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".addOrEditQRCodeActivity"
-                  android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".ImageChooseActivity" />
-        <activity android:name=".LobbyActivity" />
-        <activity android:name=".AdminLoginActivity" />
-        <activity android:name=".AdminActivity" />
-        <activity android:name=".ScannedBarcodeActivity" />
-        <activity android:name=".MainActivity">
+                  android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ImageChooseActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".LobbyActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AdminLoginActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AdminActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ScannedBarcodeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
